@@ -1,0 +1,33 @@
+.game-board-container {
+  width: 100vw;
+  height: 100vh;
+  padding: 40px;
+  box-sizing: border-box;
+  background-color: #5A9C56;
+  display: flex;
+  flex-direction: column;
+
+  .column {
+    display: flex;
+    gap: 10px;
+
+    &.stock-and-foundation {
+      flex-basis: 33.333%;
+    }
+
+    &.tableau {
+      flex-basis: 66.666%;
+    }
+  }
+
+  .row {
+    width: 100%;
+  }
+
+  .card-placeholder {
+    width: 100%;
+    padding-bottom: 140%;
+    border-radius: 6%;
+    background-color: rgba(51, 51, 51, 0.25);
+  }
+}
