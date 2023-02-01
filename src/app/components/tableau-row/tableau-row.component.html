@@ -1,0 +1,9 @@
+<div class="row">
+  <div class="card-placeholder"></div>
+  <app-card
+    *ngFor="let card of cards; let i = index; last as isLast"
+    [card]="card"
+    [index]="i"
+    [cardIsOnTop]="isLast"
+  ></app-card>
+</div>

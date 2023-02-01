@@ -1,4 +1,10 @@
 <div class="game-container">
+  <div class="game-header-bar">
+    <div class="actions">
+      <button (click)="startGame()">New game</button>
+      <button>Undo move</button>
+    </div>
+  </div>
   <div class="game-board-container">
     <div class="column stock-and-foundation">
       <div class="row">
@@ -22,27 +28,13 @@
       </div>
     </div>
     <div class="column tableau">
-      <div class="row">
-        <div class="card-placeholder"></div>
-      </div>
-      <div class="row">
-        <div class="card-placeholder"></div>
-      </div>
-      <div class="row">
-        <div class="card-placeholder"></div>
-      </div>
-      <div class="row">
-        <div class="card-placeholder"></div>
-      </div>
-      <div class="row">
-        <div class="card-placeholder"></div>
-      </div>
-      <div class="row">
-        <div class="card-placeholder"></div>
-      </div>
-      <div class="row">
-        <div class="card-placeholder"></div>
-      </div>
+      <app-tableau-row [cards]="cards"></app-tableau-row>
+      <app-tableau-row></app-tableau-row>
+      <app-tableau-row></app-tableau-row>
+      <app-tableau-row></app-tableau-row>
+      <app-tableau-row></app-tableau-row>
+      <app-tableau-row></app-tableau-row>
+      <app-tableau-row></app-tableau-row>
     </div>
   </div>
 </div>
