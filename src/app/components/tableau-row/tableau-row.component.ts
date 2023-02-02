@@ -6,7 +6,7 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./tableau-row.component.scss']
 })
 export class TableauRowComponent implements OnInit {
-  @Input() cards: { suit: string, value: string }[] = [];
+  @Input() cards: { suit: string, value: string, location: string }[] = [];
 
   constructor() { }
 

@@ -1,7 +1,7 @@
 export const deckOfCards: { suit: string, value: string }[] = [
   {
     suit: 'hearts',
-    value: 'ace',
+    value: 'A',
   },
   {
     suit: 'hearts',
@@ -41,19 +41,19 @@ export const deckOfCards: { suit: string, value: string }[] = [
   },
   {
     suit: 'hearts',
-    value: 'jack',
+    value: 'J',
   },
   {
     suit: 'hearts',
-    value: 'queen',
+    value: 'Q',
   },
   {
     suit: 'hearts',
-    value: 'king',
+    value: 'K',
   },
   {
     suit: 'diamonds',
-    value: 'ace',
+    value: 'A',
   },
   {
     suit: 'diamonds',
@@ -93,19 +93,19 @@ export const deckOfCards: { suit: string, value: string }[] = [
   },
   {
     suit: 'diamonds',
-    value: 'jack',
+    value: 'J',
   },
   {
     suit: 'diamonds',
-    value: 'queen',
+    value: 'Q',
   },
   {
     suit: 'diamonds',
-    value: 'king',
+    value: 'K',
   },
   {
     suit: 'clubs',
-    value: 'ace',
+    value: 'A',
   },
   {
     suit: 'clubs',
@@ -145,19 +145,19 @@ export const deckOfCards: { suit: string, value: string }[] = [
   },
   {
     suit: 'clubs',
-    value: 'jack',
+    value: 'J',
   },
   {
     suit: 'clubs',
-    value: 'queen',
+    value: 'Q',
   },
   {
     suit: 'clubs',
-    value: 'king',
+    value: 'K',
   },
   {
     suit: 'spades',
-    value: 'ace',
+    value: 'A',
   },
   {
     suit: 'spades',
@@ -197,14 +197,14 @@ export const deckOfCards: { suit: string, value: string }[] = [
   },
   {
     suit: 'spades',
-    value: 'jack',
+    value: 'J',
   },
   {
     suit: 'spades',
-    value: 'queen',
+    value: 'Q',
   },
   {
     suit: 'spades',
-    value: 'king',
+    value: 'K',
   },
 ];

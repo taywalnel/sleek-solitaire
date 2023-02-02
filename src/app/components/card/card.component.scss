@@ -17,7 +17,7 @@
     padding: 10%;
     box-sizing: border-box;
 
-    .top {
+    .card-front {
       font-size: 0.8rem;
       flex-basis: fit-content;
     }
@@ -34,14 +34,30 @@
     }
 
     .bottom {
-      font-size: 0.8rem;
-      flex-basis: fit-content;
-      text-align: right;
+      transform: scale(-1, -1);
     }
 
     .card-back {
       flex-basis: 100%;
       background-color: #657A9C;
     }
+  }
+}
+
+@media only screen and (min-width: 800px) {
+  .card-container .card-content .card-front {
+    font-size: 1rem;
+  }
+}
+
+@media only screen and (min-width: 950px) {
+  .card-container .card-content .card-front {
+    font-size: 1.1rem;
+  }
+}
+
+@media only screen and (min-width: 1050px) {
+  .card-container .card-content .card-front {
+    font-size: 1.3rem;
   }
 }

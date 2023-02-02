@@ -27,14 +27,14 @@
         <div class="card-placeholder"></div>
       </div>
     </div>
-    <div class="column tableau">
-      <app-tableau-row [cards]="cards"></app-tableau-row>
-      <app-tableau-row></app-tableau-row>
-      <app-tableau-row></app-tableau-row>
-      <app-tableau-row></app-tableau-row>
-      <app-tableau-row></app-tableau-row>
-      <app-tableau-row></app-tableau-row>
-      <app-tableau-row></app-tableau-row>
+    <div #tableau class="column tableau">
+      <app-tableau-row [cards]="filterCardsByLocation('1')"></app-tableau-row>
+      <app-tableau-row [cards]="filterCardsByLocation('2')"></app-tableau-row>
+      <app-tableau-row [cards]="filterCardsByLocation('3')"></app-tableau-row>
+      <app-tableau-row [cards]="filterCardsByLocation('4')"></app-tableau-row>
+      <app-tableau-row [cards]="filterCardsByLocation('5')"></app-tableau-row>
+      <app-tableau-row [cards]="filterCardsByLocation('6')"></app-tableau-row>
+      <app-tableau-row [cards]="filterCardsByLocation('7')"></app-tableau-row>
     </div>
   </div>
 </div>

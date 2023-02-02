@@ -1,17 +1,18 @@
 <div
   #cardElement
   [style]="style"
-  [style.top]="index * 10 + '%'"
+  [style.top]="index * 18 + '%'"
+  [style.zIndex]="cardSelected ? '100' : 'unset'"
   class="card-container"
 >
   <div class="card-content">
     <ng-container *ngIf="cardIsOnTop">
       <div class="card-front top">{{ card.value }}</div>
       <div class="card-front middle">
-        <img *ngIf="card.suit === 'club'" src="assets/images/club.svg" />
-        <img *ngIf="card.suit === 'spade'" src="assets/images/spade.svg" />
-        <img *ngIf="card.suit === 'heart'" src="assets/images/heart.svg" />
-        <img *ngIf="card.suit === 'diamond'" src="assets/images/spade.svg" />
+        <img *ngIf="card.suit === 'clubs'" src="assets/images/club.svg" />
+        <img *ngIf="card.suit === 'spades'" src="assets/images/spade.svg" />
+        <img *ngIf="card.suit === 'hearts'" src="assets/images/heart.svg" />
+        <img *ngIf="card.suit === 'diamonds'" src="assets/images/diamond.svg" />
       </div>
       <div class="card-front bottom">{{ card.value }}</div>
     </ng-container>
