@@ -1,9 +1,12 @@
-<div class="row">
-  <div class="card-placeholder"></div>
+<div #rowElement class="row">
+  <div class="card-placeholder">
+    <div *ngIf="placeHolderImageSrc" class="image-container">
+      <img [src]="placeHolderImageSrc">
+    </div>
+  </div>
   <app-card
     *ngFor="let card of cards; let i = index; last as isLast"
     [card]="card"
-    [index]="i"
-    [cardIsOnTop]="isLast"
+    [stackingIndex]="i"
   ></app-card>
 </div>

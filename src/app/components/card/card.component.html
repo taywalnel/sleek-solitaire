@@ -1,23 +1,34 @@
 <div
   #cardElement
   [style]="style"
-  [style.top]="index * 18 + '%'"
+  [style.top]="useTop ? stackingIndex * 25 + '%' : '0px'"
   [style.zIndex]="cardSelected ? '100' : 'unset'"
   class="card-container"
 >
-  <div class="card-content">
-    <ng-container *ngIf="cardIsOnTop">
-      <div class="card-front top">{{ card.value }}</div>
-      <div class="card-front middle">
-        <img *ngIf="card.suit === 'clubs'" src="assets/images/club.svg" />
-        <img *ngIf="card.suit === 'spades'" src="assets/images/spade.svg" />
-        <img *ngIf="card.suit === 'hearts'" src="assets/images/heart.svg" />
-        <img *ngIf="card.suit === 'diamonds'" src="assets/images/diamond.svg" />
+  <div class="card-content" [ngClass]="isRed ? 'red-card' : 'black-card'">
+    <div *ngIf="card?.isFacingUp" class="card-front">
+      <div class="row top">
+        <div class="value-container">
+          <span>{{ card.value }}</span>
+        </div>
+        <div class="suit-container">
+          <img [src]="imageSrc"> 
+        </div>
+     </div>
+      <div class="row middle">
+        <img [src]="imageSrc"> 
       </div>
-      <div class="card-front bottom">{{ card.value }}</div>
-    </ng-container>
-    <ng-container *ngIf="!cardIsOnTop">
-      <div class="card-back"></div>
-    </ng-container>
+      <div class="row bottom">
+        <div class="value-container">
+          <span>{{ card.value }}</span>
+        </div>
+        <div class="suit-container">
+          <img [src]="imageSrc">  
+        </div>      
+      </div>
+    </div>
+    <div *ngIf="!card?.isFacingUp" class="card-back">
+
+    </div>
   </div>
 </div>

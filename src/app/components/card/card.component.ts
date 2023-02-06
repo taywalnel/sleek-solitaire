@@ -1,20 +1,24 @@
-import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { fromEvent, Observable, repeat, skipUntil, takeUntil } from 'rxjs';
-import { AppComponent } from '../../app.component';
+import { AppComponent, PlayingCard } from '../../app.component';
+
+const DRAGGABLE_CARD_TYPES = ['tableau', 'waste'];
 
 @Component({
   selector: 'app-card',
   templateUrl: './card.component.html',
   styleUrls: ['./card.component.scss']
 })
-export class CardComponent implements AfterViewInit {
-  @Input() card: { suit: string, value: string, location: string };
-  @Input() index: number;
-  @Input() cardIsOnTop = false;
+export class CardComponent implements AfterViewInit, OnInit {
+  @Input() card: PlayingCard;
+  @Input() stackingIndex: number;
 
   style = '';
   cardSelected = false;
   startingCardCoOrdinates: {x: number, y: number} | null;
+  imageSrc: string;
+  isRed: boolean;
+  useTop: boolean;
   moveCard$: Observable<MouseEvent>;
   grabCard$: Observable<MouseEvent>;
   dropCard$: Observable<MouseEvent>;
@@ -23,10 +27,23 @@ export class CardComponent implements AfterViewInit {
 
   constructor(private app: AppComponent) {}
 
+  ngOnInit(){
+    this.imageSrc = `assets/images/${this.card.suit.slice(0, -1)}.svg`;
+    this.isRed = ['hearts', 'diamonds'].includes(this.card.suit);
+    this.useTop = this.card.location.type === 'tableau';
+  }
+
   ngAfterViewInit() {
     this.initializeEventObservables();
     this.watchForCardMove();
     this.watchForCardDrop();
+    this.watchForResetCardDrag();
+  }
+
+  public static cardIsAllowedToBeDragged(card: PlayingCard): boolean{
+    if(card.location.type === 'waste') return true
+    if(card.location.type === 'tableau' && card.isFacingUp) return true
+    return false;
   }
 
   initializeEventObservables(){
@@ -41,6 +58,7 @@ export class CardComponent implements AfterViewInit {
       takeUntil(this.dropCard$),
       repeat()
     ).subscribe((event) => {
+      if(!CardComponent.cardIsAllowedToBeDragged(this.card)) return;
       if(!this.startingCardCoOrdinates) return this.initializeStartingCoOrdinates(event);
       this.cardSelected = true;
       const verticalChange =  event.clientY - this.startingCardCoOrdinates.y;
@@ -60,8 +78,16 @@ export class CardComponent implements AfterViewInit {
     this.dropCard$
     .subscribe((event) => {
       this.cardSelected = false;
-      const cardDropEvent: { card: { suit: string, value: string, location: string }, clientX: number, clientY: number } = { card: this.card, clientX: event.clientX, clientY: event.clientY }
+      const cardDropEvent: { card: PlayingCard, clientX: number, clientY: number } = { card: this.card, clientX: event.clientX, clientY: event.clientY }
       this.app.cardDrop$.next(cardDropEvent);
+    })
+  }
+
+  watchForResetCardDrag(){
+    this.app.resetCard$.subscribe((card) => {
+      if(card === this.card){
+        this.moveCard(0, 0);
+      }
     })
   }
 

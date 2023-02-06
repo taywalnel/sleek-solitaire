@@ -16,27 +16,50 @@
     font-family: 'Lato', sans-serif;
     padding: 10%;
     box-sizing: border-box;
+    font-size: 0.8rem;
+    min-height: 0;
+
+    &.red-card {
+      color: #ff0000;
+    }
 
     .card-front {
-      font-size: 0.8rem;
-      flex-basis: fit-content;
-    }
-
-    .middle {
       flex-grow: 1;
-      pointer-events: none;
+      min-height: 0;
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      gap: 10%;
 
-      img {
-        padding: 10%;
+      .row {
+        min-height: 0;
+      }
+
+      .middle {
+        flex: 3;
+        display: flex;
+        justify-content: center;
+      }
+
+      .bottom {
+        transform: scale(-1, -1);
+      }
+
+      .top, .bottom {
+        display: flex;
+        justify-content: space-between;
+        flex: 1;
+
+        .value-container {
+          display: flex;
+          align-items: center;
+        }
+
+        .suit-container {
+          min-height: 0;
+        }
       }
     }
-
-    .bottom {
-      transform: scale(-1, -1);
-    }
-
+    
     .card-back {
       flex-basis: 100%;
       background-color: #657A9C;
@@ -44,9 +67,14 @@
   }
 }
 
+img {
+  height: 100%;
+  pointer-events: none;
+}
+
 @media only screen and (min-width: 800px) {
   .card-container .card-content .card-front {
-    font-size: 1rem;
+    font-size: 1.4rem;
   }
 }
 

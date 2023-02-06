@@ -1,8 +1,11 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AppComponent } from './app.component';
+import { AppComponent, PlayingCard } from './app.component';
 
 describe('AppComponent', () => {
+  let component: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
@@ -14,22 +17,126 @@ describe('AppComponent', () => {
     }).compileComponents();
   });
 
+  beforeEach(() => {
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
+  })
+
   it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+    expect(component).toBeTruthy();
   });
 
-  it(`should have as title 'solitare'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('solitare');
-  });
+  describe('cardIsAllowedToBeDropped', () => {
+    it('should return false when new top card is the same color as old top card', () => {
+      const newTopCard: PlayingCard = {
+        suit: 'clubs',
+        value: 'Q',
+        location: {
+            type: 'tableau',
+            index: 1
+          },
+        isFacingUp: true
+      };
+      const currentTopCard: PlayingCard = {
+        suit: 'clubs',
+        value: 'K',
+        location: {
+            type: 'tableau',
+            index: 1
+          },
+        isFacingUp: true
+      }
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('solitare app is running!');
-  });
+      expect(AppComponent.cardIsAllowedToBeDropped(newTopCard, currentTopCard)).toBeFalse();
+    })
+
+    it('should return false when the current top card is not an acceptable value', () => {
+      const newTopCard: PlayingCard = {
+        suit: 'diamonds',
+        value: '5',
+        location: {
+            type: 'tableau',
+            index: 1
+          },
+        isFacingUp: true
+      };
+      const currentTopCard: PlayingCard = {
+        suit: 'clubs',
+        value: '8',
+        location: {
+            type: 'tableau',
+            index: 1
+          },
+        isFacingUp: true
+      }
+
+      expect(AppComponent.cardIsAllowedToBeDropped(newTopCard, currentTopCard)).toBeFalse();
+    })
+
+    it('should return true when the current top card is an acceptable value and suit', () => {
+      const newTopCard: PlayingCard = {
+        suit: 'diamonds',
+        value: '7',
+        location: {
+            type: 'tableau',
+            index: 1
+          },
+        isFacingUp: true
+      };
+      const currentTopCard: PlayingCard = {
+        suit: 'clubs',
+        value: '8',
+        location: {
+            type: 'tableau',
+            index: 1
+          },
+        isFacingUp: true
+      }
+
+      expect(AppComponent.cardIsAllowedToBeDropped(newTopCard, currentTopCard)).toBeTrue();
+    })
+  })
+
+  describe('getTopCardOnRow', () => {
+    describe('when there are cards on a given row', () => {
+      it('should return the top card on the given row', () => {
+        component.startGame();
+
+        const expectedCard: PlayingCard = {
+          suit: 'clubs',
+          value: '5',
+          location: {
+            type: 'tableau',
+            index: 1
+          },
+          isFacingUp: true
+        }
+        component.cards.push(expectedCard);
+
+        expect(component.getTopCardForType('tableau', 1)).toEqual(expectedCard);
+      })
+    })
+
+    describe('when there are no cards on a given row', () => {
+      it('should return null', () => {
+        component.cards = [];
+
+        expect(component.getTopCardForType('tableau', 1)).toEqual(null);
+      })
+    })
+  })
+
+  describe('setLastCardInEachRowToFaceUp', () => {
+    it('should set the isFacingUp state of the last card in each row to true', () => {
+      component.cards = component.setUpCards();
+      component.setLastCardInEachRowToFaceUp();
+      const reversedCards = [...component.cards].reverse();
+      const rows = [1,2,3,4,5,6,7];
+
+      rows.forEach((row) => {
+        const topCardOnRow = reversedCards.find((card) => card.location.type === 'tableau' && card.location.index === row);
+        expect(topCardOnRow?.isFacingUp).toBeTrue;
+      })
+    })
+  })
 });
