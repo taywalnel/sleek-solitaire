@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
-import { fromEvent, Observable, repeat, skipUntil, takeUntil } from 'rxjs';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { fromEvent, map, Observable, switchMap, takeUntil, throttleTime } from 'rxjs';
 import { AppComponent, PlayingCard } from '../../app.component';
 
 const DRAGGABLE_CARD_TYPES = ['tableau', 'waste'];
@@ -19,9 +19,11 @@ export class CardComponent implements AfterViewInit, OnInit {
   imageSrc: string;
   isRed: boolean;
   useTop: boolean;
-  moveCard$: Observable<MouseEvent>;
-  grabCard$: Observable<MouseEvent>;
-  dropCard$: Observable<MouseEvent>;
+
+  mouseMove$: Observable<MouseEvent>;
+  mouseDown$: Observable<MouseEvent>;
+  mouseUp$: Observable<MouseEvent>;
+  translateCard$: Observable<string>;
 
   @ViewChild('cardElement') cardElement: ElementRef;
 
@@ -35,7 +37,6 @@ export class CardComponent implements AfterViewInit, OnInit {
 
   ngAfterViewInit() {
     this.initializeEventObservables();
-    this.watchForCardMove();
     this.watchForCardDrop();
     this.watchForResetCardDrag();
   }
@@ -47,36 +48,28 @@ export class CardComponent implements AfterViewInit, OnInit {
   }
 
   initializeEventObservables(){
-    this.grabCard$ = fromEvent<MouseEvent>(this.cardElement.nativeElement,'mousedown');
-    this.moveCard$ = fromEvent<MouseEvent>(document, 'mousemove');
-    this.dropCard$ = fromEvent<MouseEvent>(this.cardElement.nativeElement, 'mouseup');
-  }
-
-  watchForCardMove(){
-    this.moveCard$.pipe(
-      skipUntil(this.grabCard$),
-      takeUntil(this.dropCard$),
-      repeat()
-    ).subscribe((event) => {
-      if(!CardComponent.cardIsAllowedToBeDragged(this.card)) return;
-      if(!this.startingCardCoOrdinates) return this.initializeStartingCoOrdinates(event);
-      this.cardSelected = true;
-      const verticalChange =  event.clientY - this.startingCardCoOrdinates.y;
-      const horizontalChange = event.clientX - this.startingCardCoOrdinates.x;
-      this.moveCard(verticalChange, horizontalChange);
-    })
-  }
-
-  initializeStartingCoOrdinates(event: MouseEvent){
-    this.startingCardCoOrdinates = {
-      x: event.clientX,
-      y: event.clientY
-    }
+    this.mouseDown$ = fromEvent<MouseEvent>(this.cardElement.nativeElement,'mousedown');
+    this.mouseMove$ = fromEvent<MouseEvent>(document, 'mousemove');
+    this.mouseUp$ = fromEvent<MouseEvent>(this.cardElement.nativeElement, 'mouseup');
+    this.translateCard$ = this.mouseDown$.pipe(
+      switchMap(
+        (start) => {
+          return this.mouseMove$.pipe(
+            throttleTime(10),
+            map(move => {
+              move.preventDefault();
+              this.cardSelected = true;
+              return `translate(${move.clientX - start.clientX}px, ${move.clientY - start.clientY}px)`;
+          }),
+            takeUntil(this.app.resetCard$));
+        })
+    );
   }
 
   watchForCardDrop(){
-    this.dropCard$
+    this.mouseUp$
     .subscribe((event) => {
+      debugger;
       this.cardSelected = false;
       const cardDropEvent: { card: PlayingCard, clientX: number, clientY: number } = { card: this.card, clientX: event.clientX, clientY: event.clientY }
       this.app.cardDrop$.next(cardDropEvent);

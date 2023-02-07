@@ -1,6 +1,6 @@
 <div
   #cardElement
-  [style]="style"
+  [style.transform]="translateCard$ | async"
   [style.top]="useTop ? stackingIndex * 25 + '%' : '0px'"
   [style.zIndex]="cardSelected ? '100' : 'unset'"
   class="card-container"
@@ -12,23 +12,21 @@
           <span>{{ card.value }}</span>
         </div>
         <div class="suit-container">
-          <img [src]="imageSrc"> 
+          <img [src]="imageSrc" />
         </div>
-     </div>
+      </div>
       <div class="row middle">
-        <img [src]="imageSrc"> 
+        <img [src]="imageSrc" />
       </div>
       <div class="row bottom">
         <div class="value-container">
           <span>{{ card.value }}</span>
         </div>
         <div class="suit-container">
-          <img [src]="imageSrc">  
-        </div>      
+          <img [src]="imageSrc" />
+        </div>
       </div>
     </div>
-    <div *ngIf="!card?.isFacingUp" class="card-back">
-
-    </div>
+    <div *ngIf="!card?.isFacingUp" class="card-back"></div>
   </div>
 </div>
