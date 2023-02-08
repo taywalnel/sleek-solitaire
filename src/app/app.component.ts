@@ -119,21 +119,6 @@ export class AppComponent implements OnInit {
     this.cards.push(cardToUpdate);
   }
 
-  getBoundingClientRectForEachCard(){
-    const rects: { row: number, rect: DOMRect}[] = [];
-    this.tableauSection.nativeElement.childNodes.forEach((row: any, rowIndex: number) => {
-      row.childNodes[0].childNodes.forEach((card: any) => {
-        if(card.nodeName === 'APP-CARD'){
-          rects.push({ row: rowIndex + 1, rect: card.childNodes[0].getBoundingClientRect() });
-        }
-        if(card.nodeName === 'DIV'){
-          rects.push({ row: rowIndex + 1, rect: card.getBoundingClientRect() });
-        }
-      });
-    })
-    return rects;
-  }
-
   getIndexOfRowCardWasDroppedOn(movedCard: PlayingCard, cardDropPosition: {clientX: number, clientY: number}): number {
     const listOfCardsWithPositions: { row: number, rect: DOMRect}[] = this.getBoundingClientRectForEachCard();
     const previousLocationOfCard = movedCard.location.index;
@@ -151,6 +136,21 @@ export class AppComponent implements OnInit {
       }
     })
     return indexOfRowCardWasDroppedOn;
+  }
+
+  getBoundingClientRectForEachCard(){
+    const rects: { row: number, rect: DOMRect}[] = [];
+    this.tableauSection.nativeElement.childNodes.forEach((row: any, rowIndex: number) => {
+      row.childNodes[0].childNodes.forEach((card: any) => {
+        if(card.nodeName === 'APP-CARD'){
+          rects.push({ row: rowIndex + 1, rect: card.childNodes[0].getBoundingClientRect() });
+        }
+        if(card.nodeName === 'DIV'){
+          rects.push({ row: rowIndex + 1, rect: card.getBoundingClientRect() });
+        }
+      });
+    })
+    return rects;
   }
 
   startGame(){

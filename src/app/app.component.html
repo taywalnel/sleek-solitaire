@@ -8,33 +8,76 @@
   <div class="game-board-container">
     <div class="column stock-and-foundation">
       <div class="row">
-        <app-tableau-row [cards]="filterCardsByLocation({type: 'stock', index: 1})" type="stock" [index]="1" placeHolderImageSrc="assets/images/refresh.svg"></app-tableau-row>
+        <app-card-pile
+          [cards]="filterCardsByLocation({ type: 'stock', index: 1 })"
+          type="stock"
+          [index]="1"
+          placeHolderImageSrc="assets/images/refresh.svg"
+        ></app-card-pile>
       </div>
       <div class="row">
-        <app-tableau-row [cards]="filterCardsByLocation({type: 'waste', index: 1})" type="waste" [index]="1"></app-tableau-row>
+        <app-card-pile
+          [cards]="filterCardsByLocation({ type: 'waste', index: 1 })"
+          type="waste"
+          [index]="1"
+        ></app-card-pile>
       </div>
       <div class="row"></div>
       <div class="row">
-        <app-tableau-row [cards]="filterCardsByLocation({type: 'foundation', index: 1})" type="foundation" [index]="1" placeHolderImageSrc="assets/images/heart.svg"></app-tableau-row>
+        <app-card-pile
+          [cards]="filterCardsByLocation({ type: 'foundation', index: 1 })"
+          type="foundation"
+          [index]="1"
+          placeHolderImageSrc="assets/images/heart.svg"
+        ></app-card-pile>
       </div>
       <div class="row">
-        <app-tableau-row [cards]="filterCardsByLocation({type: 'foundation', index: 1})" type="foundation" [index]="1" placeHolderImageSrc="assets/images/club.svg"></app-tableau-row>
+        <app-card-pile
+          [cards]="filterCardsByLocation({ type: 'foundation', index: 1 })"
+          type="foundation"
+          [index]="1"
+          placeHolderImageSrc="assets/images/club.svg"
+        ></app-card-pile>
       </div>
       <div class="row">
-        <app-tableau-row [cards]="filterCardsByLocation({type: 'foundation', index: 1})" type="foundation" [index]="1" placeHolderImageSrc="assets/images/diamond.svg"></app-tableau-row>
+        <app-card-pile
+          [cards]="filterCardsByLocation({ type: 'foundation', index: 1 })"
+          type="foundation"
+          [index]="1"
+          placeHolderImageSrc="assets/images/diamond.svg"
+        ></app-card-pile>
       </div>
       <div class="row">
-        <app-tableau-row [cards]="filterCardsByLocation({type: 'foundation', index: 1})" type="foundation" [index]="1" placeHolderImageSrc="assets/images/spade.svg"></app-tableau-row>
+        <app-card-pile
+          [cards]="filterCardsByLocation({ type: 'foundation', index: 1 })"
+          type="foundation"
+          [index]="1"
+          placeHolderImageSrc="assets/images/spade.svg"
+        ></app-card-pile>
       </div>
     </div>
     <div #tableau class="column tableau">
-      <app-tableau-row [cards]="filterCardsByLocation({type: 'tableau',index: 1})"></app-tableau-row>
-      <app-tableau-row [cards]="filterCardsByLocation({type: 'tableau',index: 2})"></app-tableau-row>
-      <app-tableau-row [cards]="filterCardsByLocation({type: 'tableau',index: 3})"></app-tableau-row>
-      <app-tableau-row [cards]="filterCardsByLocation({type: 'tableau',index: 4})"></app-tableau-row>
-      <app-tableau-row [cards]="filterCardsByLocation({type: 'tableau',index: 5})"></app-tableau-row>
-      <app-tableau-row [cards]="filterCardsByLocation({type: 'tableau',index: 6})"></app-tableau-row>
-      <app-tableau-row [cards]="filterCardsByLocation({type: 'tableau',index: 7})"></app-tableau-row>
+      <app-card-pile
+        [cards]="filterCardsByLocation({ type: 'tableau', index: 1 })"
+      ></app-card-pile>
+      <app-card-pile
+        [cards]="filterCardsByLocation({ type: 'tableau', index: 2 })"
+      ></app-card-pile>
+      <app-card-pile
+        [cards]="filterCardsByLocation({ type: 'tableau', index: 3 })"
+      ></app-card-pile>
+      <app-card-pile
+        [cards]="filterCardsByLocation({ type: 'tableau', index: 4 })"
+      ></app-card-pile>
+      <app-card-pile
+        [cards]="filterCardsByLocation({ type: 'tableau', index: 5 })"
+      ></app-card-pile>
+      <app-card-pile
+        [cards]="filterCardsByLocation({ type: 'tableau', index: 6 })"
+      ></app-card-pile>
+      <app-card-pile
+        [cards]="filterCardsByLocation({ type: 'tableau', index: 7 })"
+      ></app-card-pile>
     </div>
   </div>
 </div>
