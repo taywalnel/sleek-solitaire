@@ -23,7 +23,7 @@ const RED_CARDS = ['diamonds', 'hearts'];
 export class AppComponent implements OnInit {
   cards: PlayingCard[];
   cardDrop$ = new Subject<any>;
-  resetCard$ = new Subject<PlayingCard>;
+  cardReset$ = new Subject<string>;
   stockClicked$ = new Subject<boolean>;
 
   @ViewChild('tableau') tableauSection: ElementRef;
@@ -70,7 +70,7 @@ export class AppComponent implements OnInit {
         this.updateCardLocation(event.card, {type: 'tableau', index: indexOfRowCardWasDroppedOn});
         this.setLastCardInEachRowToFaceUp();
       }else {
-        this.resetCard$.next(event.card);
+        this.cardReset$.next('translate(0px, 0px)');
       }
     })
   }
@@ -183,7 +183,7 @@ export class AppComponent implements OnInit {
       if(index === -1) return
       reversedCards[index].isFacingUp = true;
     })
-    this.cards = reversedCards.reverse(); 
+    this.cards = reversedCards.reverse();
   }
 
   shuffleCards(unshuffledCards: { suit: string, value: string }[]): { suit: string, value: string }[] {

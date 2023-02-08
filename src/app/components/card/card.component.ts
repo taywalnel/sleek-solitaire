@@ -1,8 +1,9 @@
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { fromEvent, map, Observable, switchMap, takeUntil, throttleTime } from 'rxjs';
+import { fromEvent, map, merge, Observable, switchMap, takeUntil, throttleTime } from 'rxjs';
 import { AppComponent, PlayingCard } from '../../app.component';
 
 const DRAGGABLE_CARD_TYPES = ['tableau', 'waste'];
+const CARD_RESET_TRANSITION_TIME = 300;
 
 @Component({
   selector: 'app-card',
@@ -14,7 +15,8 @@ export class CardComponent implements AfterViewInit, OnInit {
   @Input() stackingIndex: number;
 
   style = '';
-  cardSelected = false;
+  userIsMovingCard = false;
+  applyZIndex = false;
   startingCardCoOrdinates: {x: number, y: number} | null;
   imageSrc: string;
   isRed: boolean;
@@ -23,6 +25,7 @@ export class CardComponent implements AfterViewInit, OnInit {
   mouseMove$: Observable<MouseEvent>;
   mouseDown$: Observable<MouseEvent>;
   mouseUp$: Observable<MouseEvent>;
+  cardMove$: Observable<string>;
   translateCard$: Observable<string>;
 
   @ViewChild('cardElement') cardElement: ElementRef;
@@ -38,7 +41,6 @@ export class CardComponent implements AfterViewInit, OnInit {
   ngAfterViewInit() {
     this.initializeEventObservables();
     this.watchForCardDrop();
-    this.watchForResetCardDrag();
   }
 
   public static cardIsAllowedToBeDragged(card: PlayingCard): boolean{
@@ -51,40 +53,34 @@ export class CardComponent implements AfterViewInit, OnInit {
     this.mouseDown$ = fromEvent<MouseEvent>(this.cardElement.nativeElement,'mousedown');
     this.mouseMove$ = fromEvent<MouseEvent>(document, 'mousemove');
     this.mouseUp$ = fromEvent<MouseEvent>(this.cardElement.nativeElement, 'mouseup');
-    this.translateCard$ = this.mouseDown$.pipe(
+
+    this.cardMove$ = this.mouseDown$.pipe(
       switchMap(
         (start) => {
           return this.mouseMove$.pipe(
-            throttleTime(10),
+            throttleTime(5),
             map(move => {
               move.preventDefault();
-              this.cardSelected = true;
+              this.userIsMovingCard = true;
+              this.applyZIndex = true;
               return `translate(${move.clientX - start.clientX}px, ${move.clientY - start.clientY}px)`;
           }),
-            takeUntil(this.app.resetCard$));
+            takeUntil(this.mouseUp$));
         })
     );
+
+    this.translateCard$ = merge(this.cardMove$, this.app.cardReset$);
   }
 
   watchForCardDrop(){
     this.mouseUp$
     .subscribe((event) => {
-      debugger;
-      this.cardSelected = false;
+      this.userIsMovingCard = false;
+      setTimeout(() => {
+        this.applyZIndex = false;
+      }, CARD_RESET_TRANSITION_TIME);
       const cardDropEvent: { card: PlayingCard, clientX: number, clientY: number } = { card: this.card, clientX: event.clientX, clientY: event.clientY }
       this.app.cardDrop$.next(cardDropEvent);
     })
-  }
-
-  watchForResetCardDrag(){
-    this.app.resetCard$.subscribe((card) => {
-      if(card === this.card){
-        this.moveCard(0, 0);
-      }
-    })
-  }
-
-  moveCard(up: number, right: number){
-    this.style = `transform: translate(${right}px, ${up}px);`;
   }
 }

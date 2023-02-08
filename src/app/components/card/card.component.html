@@ -2,8 +2,9 @@
   #cardElement
   [style.transform]="translateCard$ | async"
   [style.top]="useTop ? stackingIndex * 25 + '%' : '0px'"
-  [style.zIndex]="cardSelected ? '100' : 'unset'"
-  class="card-container"
+  [style.zIndex]="applyZIndex ? '100' : 'unset'"
+  class="card-container noselect"
+  [class.useTransition]="!userIsMovingCard"
 >
   <div class="card-content" [ngClass]="isRed ? 'red-card' : 'black-card'">
     <div *ngIf="card?.isFacingUp" class="card-front">
