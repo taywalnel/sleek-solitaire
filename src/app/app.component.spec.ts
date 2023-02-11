@@ -26,78 +26,7 @@ describe('AppComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('cardIsAllowedToBeDropped', () => {
-    it('should return false when new top card is the same color as old top card', () => {
-      const newTopCard: PlayingCard = {
-        suit: 'clubs',
-        value: 'Q',
-        location: {
-            type: 'tableau',
-            index: 1
-          },
-        isFacingUp: true
-      };
-      const currentTopCard: PlayingCard = {
-        suit: 'clubs',
-        value: 'K',
-        location: {
-            type: 'tableau',
-            index: 1
-          },
-        isFacingUp: true
-      }
-
-      expect(AppComponent.cardIsAllowedToBeDropped(newTopCard, currentTopCard)).toBeFalse();
-    })
-
-    it('should return false when the current top card is not an acceptable value', () => {
-      const newTopCard: PlayingCard = {
-        suit: 'diamonds',
-        value: '5',
-        location: {
-            type: 'tableau',
-            index: 1
-          },
-        isFacingUp: true
-      };
-      const currentTopCard: PlayingCard = {
-        suit: 'clubs',
-        value: '8',
-        location: {
-            type: 'tableau',
-            index: 1
-          },
-        isFacingUp: true
-      }
-
-      expect(AppComponent.cardIsAllowedToBeDropped(newTopCard, currentTopCard)).toBeFalse();
-    })
-
-    it('should return true when the current top card is an acceptable value and suit', () => {
-      const newTopCard: PlayingCard = {
-        suit: 'diamonds',
-        value: '7',
-        location: {
-            type: 'tableau',
-            index: 1
-          },
-        isFacingUp: true
-      };
-      const currentTopCard: PlayingCard = {
-        suit: 'clubs',
-        value: '8',
-        location: {
-            type: 'tableau',
-            index: 1
-          },
-        isFacingUp: true
-      }
-
-      expect(AppComponent.cardIsAllowedToBeDropped(newTopCard, currentTopCard)).toBeTrue();
-    })
-  })
-
-  describe('getTopCardOnRow', () => {
+  describe('getTopCardForType', () => {
     describe('when there are cards on a given row', () => {
       it('should return the top card on the given row', () => {
         component.startGame();
@@ -136,6 +65,60 @@ describe('AppComponent', () => {
       rows.forEach((row) => {
         const topCardOnRow = reversedCards.find((card) => card.location.type === 'tableau' && card.location.index === row);
         expect(topCardOnRow?.isFacingUp).toBeTrue;
+      })
+    })
+  })
+
+  describe('cardValueIsOneLowerThanNext', () => {
+    describe('when card is one value LOWER than card', () => {
+      it('should return true', () => {
+        const card1Value = '9';
+        const card2Value = '10';
+        expect(AppComponent.cardValueIsOneLowerThanNext(card1Value, card2Value)).toBeTrue();
+      })
+    })
+
+    describe('when card is NOT one value LOWER than card', () => {
+      it('should return true', () => {
+        const card1Value = 'A';
+        const card2Value = 'K';
+        expect(AppComponent.cardValueIsOneLowerThanNext(card1Value, card2Value)).toBeFalse();
+      })
+    })
+  })
+
+  describe('cardValueIsOneGreaterThanNext', () => {
+    describe('when card is one value GREATER than card', () => {
+      it('should return true', () => {
+        const card1Value = '2';
+        const card2Value = 'A';
+        expect(AppComponent.cardValueIsOneGreaterThanNext(card1Value, card2Value)).toBeTrue();
+      })
+    })
+
+    describe('when card is NOT one value GREATER than card', () => {
+      it('should return true', () => {
+        const card1Value = 'K';
+        const card2Value = 'A';
+        expect(AppComponent.cardValueIsOneGreaterThanNext(card1Value, card2Value)).toBeFalse();
+      })
+    })
+  })
+
+  describe('cardsAreSameSuitColor', () => {
+    describe('when cards are same suit color', () => {
+      it('should return true', () => {
+        const card1Suit = 'hearts';
+        const card2Suit = 'diamonds';
+        expect(AppComponent.cardsAreSameSuitColor(card1Suit, card2Suit)).toBeTrue();
+      })
+    })
+
+    describe('when cards are same NOT suit color', () => {
+      it('should return true', () => {
+        const card1Suit = 'hearts';
+        const card2Suit = 'clubs';
+        expect(AppComponent.cardsAreSameSuitColor(card1Suit, card2Suit)).toBeFalse();
       })
     })
   })

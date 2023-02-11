@@ -94,7 +94,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       }
 
       if(AppComponent.cardsAreSameSuitColor(card.suit, topCardOfNewLocation.suit)) return false;
-      return AppComponent.cardIsOneValueLowerThanCard(card.value, topCardOfNewLocation.value);
+      return AppComponent.cardValueIsOneLowerThanNext(card.value, topCardOfNewLocation.value);
     }
 
     // foundation
@@ -105,7 +105,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       }
 
       if(card.suit !== topCardOfNewLocation.suit) return false;
-      return AppComponent.cardIsOneValueLowerThanCard(card.value, topCardOfNewLocation.value);
+      return AppComponent.cardValueIsOneGreaterThanNext(card.value, topCardOfNewLocation.value);
     }
 
     return false;
@@ -121,28 +121,26 @@ export class AppComponent implements OnInit, AfterViewInit {
     return false;
   }
 
-  public static cardIsOneValueLowerThanCard(card1Value: string, card2Value: string): boolean {
-    const valueCard1MustBe =  deckOfCards[deckOfCards.findIndex((card) => card.value === card2Value) - 1].value;
-    return card1Value === valueCard1MustBe;
+  public static cardValueIsOneLowerThanNext(value1: string, value2: string): boolean {
+    const allPossbleCardValuesInOrder = deckOfCards.filter((card) => card.suit === 'hearts');
+    const indexOfValue1InDeck = allPossbleCardValuesInOrder.findIndex((card) => card.value === value1);
+    const indexOfCardOneValueGreaterThanCard1 = indexOfValue1InDeck + 1;
+
+    if(allPossbleCardValuesInOrder[indexOfCardOneValueGreaterThanCard1]){
+      return allPossbleCardValuesInOrder[indexOfCardOneValueGreaterThanCard1].value === value2;
+    }
+    return false;
   }
 
-  public static cardIsAllowedToBeDropped(newTopCard: PlayingCard, currentTopCard: PlayingCard | null){
-    if(!currentTopCard){
-      if(newTopCard.value === 'K') return true
-      return false;
-    }
+  public static cardValueIsOneGreaterThanNext(value1: string, value2: string): boolean {
+    const allPossbleCardValuesInOrder = deckOfCards.filter((card) => card.suit === 'hearts');
+    const indexOfValue1InDeck = allPossbleCardValuesInOrder.findIndex((card) => card.value === value1);
+    const indexOfCardOneValueGreaterThanCard1 = indexOfValue1InDeck - 1;
 
-    if(RED_CARDS.includes(newTopCard.suit) && RED_CARDS.includes(currentTopCard.suit)){
-      return false;
+    if(allPossbleCardValuesInOrder[indexOfCardOneValueGreaterThanCard1]){
+      return allPossbleCardValuesInOrder[indexOfCardOneValueGreaterThanCard1].value === value2;
     }
-    if(BLACK_CARDS.includes(newTopCard.suit) && BLACK_CARDS.includes(currentTopCard.suit)){
-      return false;
-    }
-    const valueCurrentTopCardMustHaveToBeAllowed = deckOfCards[deckOfCards.findIndex((card) => card.value === newTopCard.value) + 1].value;
-    if(currentTopCard.value !== valueCurrentTopCardMustHaveToBeAllowed){
-      return false;
-    }
-    return true;
+    return false;
   }
 
   getTopCardForType(type: string, index?: number): PlayingCard | null {
@@ -263,21 +261,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     })
     return cardPileElements;
   }
-
-  // getBoundingClientRectForEachCard(){
-  //   const rects: { row: number, rect: DOMRect}[] = [];
-  //   this.tableauSection.nativeElement.childNodes.forEach((row: any, rowIndex: number) => {
-  //     row.childNodes[0].childNodes.forEach((card: any) => {
-  //       if(card.nodeName === 'APP-CARD'){
-  //         rects.push({ row: rowIndex + 1, rect: card.childNodes[0].getBoundingClientRect() });
-  //       }
-  //       if(card.nodeName === 'DIV'){
-  //         rects.push({ row: rowIndex + 1, rect: card.getBoundingClientRect() });
-  //       }
-  //     });
-  //   })
-  //   return rects;
-  // }
 
   startGame(){
     this.cards = this.setUpCards();

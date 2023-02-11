@@ -2,7 +2,6 @@ import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '
 import { fromEvent, map, merge, Observable, switchMap, takeUntil, throttleTime } from 'rxjs';
 import { AppComponent, PlayingCard } from '../../app.component';
 
-const DRAGGABLE_CARD_TYPES = ['tableau', 'waste'];
 const CARD_RESET_TRANSITION_TIME = 300;
 
 @Component({
