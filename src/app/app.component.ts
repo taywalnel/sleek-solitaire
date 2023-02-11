@@ -1,4 +1,5 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { deckOfCards } from './constants/deck-of-cards';
 
@@ -20,18 +21,25 @@ const RED_CARDS = ['diamonds', 'hearts'];
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
   cards: PlayingCard[];
   cardDrop$ = new Subject<any>;
   cardReset$ = new Subject<string>;
   stockClicked$ = new Subject<boolean>;
+  cardPileElements: NodeList;
 
   @ViewChild('tableau') tableauSection: ElementRef;
+
+  constructor (@Inject(DOCUMENT) private document: Document) {}
 
   ngOnInit(){
     this.startGame();
     this.watchForCardDrop();
     this.watchForDeckClick();
+  }
+
+  ngAfterViewInit(): void {
+    this.cardPileElements = document.querySelectorAll('app-card-pile');
   }
 
   watchForDeckClick(){
@@ -63,11 +71,13 @@ export class AppComponent implements OnInit {
 
   watchForCardDrop(){
     this.cardDrop$.subscribe((event: { card: PlayingCard, clientX: number, clientY: number }) => {
-      const indexOfRowCardWasDroppedOn = this.getIndexOfRowCardWasDroppedOn(event.card, {clientX: event.clientX, clientY: event.clientY});
-      const currentTopCardOnRow = this.getTopCardForType('tableau', indexOfRowCardWasDroppedOn);
+      const locationCardWasDroppedOn = this.getLocationCardWasDroppedOn(event.card, {clientX: event.clientX, clientY: event.clientY});
+      if(!locationCardWasDroppedOn) return this.cardReset$.next('translate(0px, 0px)');
 
-      if(this.cardWasDroppedOnANewRow(indexOfRowCardWasDroppedOn) && AppComponent.cardIsAllowedToBeDropped(event.card, currentTopCardOnRow)){
-        this.updateCardLocation(event.card, {type: 'tableau', index: indexOfRowCardWasDroppedOn});
+      const currentTopCardOnRow = this.getTopCardForType(locationCardWasDroppedOn.type, locationCardWasDroppedOn.index);
+
+      if(AppComponent.cardIsAllowedToBeMovedToNewLocation(locationCardWasDroppedOn, event.card, currentTopCardOnRow)){
+        this.updateCardLocation(event.card, {type: locationCardWasDroppedOn.type, index: locationCardWasDroppedOn.index});
         this.setLastCardInEachRowToFaceUp();
       }else {
         this.cardReset$.next('translate(0px, 0px)');
@@ -75,23 +85,62 @@ export class AppComponent implements OnInit {
     })
   }
 
-  public static cardIsAllowedToBeDropped(newTopCard: PlayingCard, currentTopCard: PlayingCard | null){
-    if(!currentTopCard){
-      if(newTopCard.value === 'K') return true
-      return false;
+  public static cardIsAllowedToBeMovedToNewLocation(newLocation: PlayingCard["location"], card: PlayingCard, topCardOfNewLocation: PlayingCard | null): boolean {
+    // tableau
+    if(newLocation.type === 'tableau'){
+      if(!topCardOfNewLocation){
+        if(card.value === 'K') return true
+        return false;
+      }
+
+      if(AppComponent.cardsAreSameSuitColor(card.suit, topCardOfNewLocation.suit)) return false;
+      return AppComponent.cardValueIsOneLowerThanNext(card.value, topCardOfNewLocation.value);
     }
 
-    if(RED_CARDS.includes(newTopCard.suit) && RED_CARDS.includes(currentTopCard.suit)){
-      return false;
+    // foundation
+    if(newLocation.type === 'foundation'){
+      if(!topCardOfNewLocation){
+        if(card.value === 'A') return true;
+        return false;
+      }
+
+      if(card.suit !== topCardOfNewLocation.suit) return false;
+      return AppComponent.cardValueIsOneGreaterThanNext(card.value, topCardOfNewLocation.value);
     }
-    if(BLACK_CARDS.includes(newTopCard.suit) && BLACK_CARDS.includes(currentTopCard.suit)){
-      return false;
+
+    return false;
+  }
+
+  public static cardsAreSameSuitColor(card1Suit: string, card2Suit: string): boolean {
+    if(RED_CARDS.includes(card1Suit) && RED_CARDS.includes(card2Suit)){
+      return true;
     }
-    const valueCurrentTopCardMustHaveToBeAllowed = deckOfCards[deckOfCards.findIndex((card) => card.value === newTopCard.value) + 1].value;
-    if(currentTopCard.value !== valueCurrentTopCardMustHaveToBeAllowed){
-      return false;
+    if(BLACK_CARDS.includes(card1Suit) && BLACK_CARDS.includes(card2Suit)){
+      return true;
     }
-    return true;
+    return false;
+  }
+
+  public static cardValueIsOneLowerThanNext(value1: string, value2: string): boolean {
+    const allPossbleCardValuesInOrder = deckOfCards.filter((card) => card.suit === 'hearts');
+    const indexOfValue1InDeck = allPossbleCardValuesInOrder.findIndex((card) => card.value === value1);
+    const indexOfCardOneValueGreaterThanCard1 = indexOfValue1InDeck + 1;
+
+    if(allPossbleCardValuesInOrder[indexOfCardOneValueGreaterThanCard1]){
+      return allPossbleCardValuesInOrder[indexOfCardOneValueGreaterThanCard1].value === value2;
+    }
+    return false;
+  }
+
+  public static cardValueIsOneGreaterThanNext(value1: string, value2: string): boolean {
+    const allPossbleCardValuesInOrder = deckOfCards.filter((card) => card.suit === 'hearts');
+    const indexOfValue1InDeck = allPossbleCardValuesInOrder.findIndex((card) => card.value === value1);
+    const indexOfCardOneValueGreaterThanCard1 = indexOfValue1InDeck - 1;
+
+    if(allPossbleCardValuesInOrder[indexOfCardOneValueGreaterThanCard1]){
+      return allPossbleCardValuesInOrder[indexOfCardOneValueGreaterThanCard1].value === value2;
+    }
+    return false;
   }
 
   getTopCardForType(type: string, index?: number): PlayingCard | null {
@@ -107,10 +156,6 @@ export class AppComponent implements OnInit {
     return this.cards[indexOfTopCard];
   }
 
-  cardWasDroppedOnANewRow(index: number): boolean {
-    return index === -1 ? false : true;
-  }
-
   updateCardLocation(movedCard: PlayingCard, newLocation: PlayingCard["location"]): void {
     const indexOfCardToUpdate = this.cards.findIndex((card) => card === movedCard);
     const cardToUpdate = this.cards[indexOfCardToUpdate];
@@ -119,38 +164,102 @@ export class AppComponent implements OnInit {
     this.cards.push(cardToUpdate);
   }
 
-  getIndexOfRowCardWasDroppedOn(movedCard: PlayingCard, cardDropPosition: {clientX: number, clientY: number}): number {
-    const listOfCardsWithPositions: { row: number, rect: DOMRect}[] = this.getBoundingClientRectForEachCard();
-    const previousLocationOfCard = movedCard.location.index;
-    let indexOfRowCardWasDroppedOn = -1;
+  getLocationCardWasDroppedOn(movedCard: PlayingCard, cardDropPosition: {clientX: number, clientY: number}): PlayingCard["location"] | undefined {
+    const listOfCardsWithPositions: { location: PlayingCard["location"], rect: { top: number, bottom: number, left: number, right: number }}[] = this.getBoundingClientRectForEachCard();
+    const previousLocationOfCard = movedCard.location;
+    let locationCardWasDroppedOn;
 
     listOfCardsWithPositions.forEach((cardToCheck) => {
       if(movedCard.location.type === 'tableau'){
-        if(cardToCheck.row == previousLocationOfCard) return;
+        if(cardToCheck.location.index == previousLocationOfCard.index) return;
       }
 
       const cardInSectionHorizontally = cardDropPosition.clientX > cardToCheck.rect.left && cardDropPosition.clientX < cardToCheck.rect.right;
       const cardInSectionVertically = cardDropPosition.clientY > cardToCheck.rect.top && cardDropPosition.clientY < cardToCheck.rect.bottom;
       if(cardInSectionHorizontally && cardInSectionVertically){
-        indexOfRowCardWasDroppedOn = cardToCheck.row;
+        locationCardWasDroppedOn = cardToCheck.location;
       }
     })
-    return indexOfRowCardWasDroppedOn;
+    return locationCardWasDroppedOn;
   }
 
   getBoundingClientRectForEachCard(){
-    const rects: { row: number, rect: DOMRect}[] = [];
-    this.tableauSection.nativeElement.childNodes.forEach((row: any, rowIndex: number) => {
-      row.childNodes[0].childNodes.forEach((card: any) => {
+    const cardPileElements: { location: PlayingCard["location"], rect: { top: number, bottom: number, left: number, right: number }}[] = [];
+    const cardPileLocations = [
+      {
+        type: 'deck',
+        index: 1
+      },
+      {
+        type: 'waste',
+        index: 1
+      },
+      {
+        type: 'foundation',
+        index: 1
+      },
+      {
+        type: 'foundation',
+        index: 2
+      },
+      {
+        type: 'foundation',
+        index: 3
+      },
+      {
+        type: 'foundation',
+        index: 4
+      },
+      {
+        type: 'tableau',
+        index: 1
+      },
+      {
+        type: 'tableau',
+        index: 2
+      },
+      {
+        type: 'tableau',
+        index: 3
+      },
+      {
+        type: 'tableau',
+        index: 4
+      },
+      {
+        type: 'tableau',
+        index: 5
+      },
+      {
+        type: 'tableau',
+        index: 6
+      },
+      {
+        type: 'tableau',
+        index: 7
+      },
+    ]
+    this.cardPileElements.forEach((cardPile, index) => {
+      const childElementDimensions: DOMRect[] = [];
+      cardPile.childNodes[0].childNodes.forEach((card: any) => {
         if(card.nodeName === 'APP-CARD'){
-          rects.push({ row: rowIndex + 1, rect: card.childNodes[0].getBoundingClientRect() });
+          childElementDimensions.push(card.childNodes[0].getBoundingClientRect());
         }
         if(card.nodeName === 'DIV'){
-          rects.push({ row: rowIndex + 1, rect: card.getBoundingClientRect() });
+          childElementDimensions.push(card.getBoundingClientRect());
         }
-      });
+      })
+      cardPileElements.push({
+        location: cardPileLocations[index],
+        rect: {
+          top: Math.min(...childElementDimensions.map(element => element.top)),
+          bottom: Math.max(...childElementDimensions.map(element => element.bottom)),
+          left: childElementDimensions[0].left,
+          right: childElementDimensions[0].right
+        }
+      })
     })
-    return rects;
+    return cardPileElements;
   }
 
   startGame(){
