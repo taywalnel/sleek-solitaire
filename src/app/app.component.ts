@@ -13,6 +13,16 @@ export interface PlayingCard {
   isFacingUp: boolean;
 }
 
+export interface CardMovingEvent {
+  card: PlayingCard;
+  translation: string;
+}
+
+export interface AdditionalCardsToMoveEvent {
+  additionalCardsToMove: PlayingCard[];
+  translation: string;
+}
+
 const BLACK_CARDS = ['spades', 'clubs'];
 const RED_CARDS = ['diamonds', 'hearts'];
 
@@ -25,6 +35,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   cards: PlayingCard[];
   cardDrop$ = new Subject<any>;
   cardReset$ = new Subject<string>;
+  cardIsBeingMoved$ = new Subject<CardMovingEvent>;
+  additionalCardsToMove$ = new Subject<AdditionalCardsToMoveEvent>;
   stockClicked$ = new Subject<boolean>;
   cardPileElements: NodeList;
 
@@ -36,10 +48,32 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.startGame();
     this.watchForCardDrop();
     this.watchForDeckClick();
+    this.watchForCardMove();
   }
 
   ngAfterViewInit(): void {
     this.cardPileElements = document.querySelectorAll('app-card-pile');
+  }
+
+  watchForCardDrop(){
+    this.cardDrop$.subscribe((event: { card: PlayingCard, clientX: number, clientY: number }) => {
+      const locationCardWasDroppedOn = this.getLocationCardWasDroppedOn(event.card, {clientX: event.clientX, clientY: event.clientY});
+      if(!locationCardWasDroppedOn) return this.cardReset$.next('translate(0px, 0px)');
+
+      const currentTopCardOnRow = this.getTopCardForType(locationCardWasDroppedOn.type, locationCardWasDroppedOn.index);
+
+      if(AppComponent.cardIsAllowedToBeMovedToNewLocation(locationCardWasDroppedOn, event.card, currentTopCardOnRow)){
+        const additionalCardsToUpdate = this.getCardsSittingOnTopOfCurrentCard(event.card);
+        const allCardsToUpdate = [event.card].concat(additionalCardsToUpdate);
+        allCardsToUpdate.forEach((card) => {
+          this.updateCardLocation(card, {type: locationCardWasDroppedOn.type, index: locationCardWasDroppedOn.index});
+        })
+        
+        this.setLastCardInEachRowToFaceUp();
+      }else {
+        this.cardReset$.next('translate(0px, 0px)');
+      }
+    })
   }
 
   watchForDeckClick(){
@@ -52,6 +86,26 @@ export class AppComponent implements OnInit, AfterViewInit {
       }
     })
   }
+
+  watchForCardMove(): void {
+    this.cardIsBeingMoved$.subscribe(({card, translation}) => {
+      const cardsOnTopOfCurrentCard = this.getCardsSittingOnTopOfCurrentCard(card);
+      if(cardsOnTopOfCurrentCard.length){
+        this.additionalCardsToMove$.next({
+          additionalCardsToMove: cardsOnTopOfCurrentCard,
+          translation
+        });
+      }
+    })
+  }
+
+  getCardsSittingOnTopOfCurrentCard(currentCard: PlayingCard): PlayingCard[]{
+    const cardsInSameLocation = [...this.cards].filter((card) =>  JSON.stringify(card.location) === JSON.stringify(currentCard.location));
+    const indexOfCurrentCard = cardsInSameLocation.findIndex(card => JSON.stringify(card) === JSON.stringify(currentCard));
+    return cardsInSameLocation.slice(indexOfCurrentCard + 1);
+  }
+
+  
 
   resetStock(){
     const updatedCards = this.cards
@@ -67,22 +121,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     cardToMove.isFacingUp = true;
     const newLocation: PlayingCard["location"] = {type: 'waste', index: 1};
     this.updateCardLocation(cardToMove, newLocation);
-  }
-
-  watchForCardDrop(){
-    this.cardDrop$.subscribe((event: { card: PlayingCard, clientX: number, clientY: number }) => {
-      const locationCardWasDroppedOn = this.getLocationCardWasDroppedOn(event.card, {clientX: event.clientX, clientY: event.clientY});
-      if(!locationCardWasDroppedOn) return this.cardReset$.next('translate(0px, 0px)');
-
-      const currentTopCardOnRow = this.getTopCardForType(locationCardWasDroppedOn.type, locationCardWasDroppedOn.index);
-
-      if(AppComponent.cardIsAllowedToBeMovedToNewLocation(locationCardWasDroppedOn, event.card, currentTopCardOnRow)){
-        this.updateCardLocation(event.card, {type: locationCardWasDroppedOn.type, index: locationCardWasDroppedOn.index});
-        this.setLastCardInEachRowToFaceUp();
-      }else {
-        this.cardReset$.next('translate(0px, 0px)');
-      }
-    })
   }
 
   public static cardIsAllowedToBeMovedToNewLocation(newLocation: PlayingCard["location"], card: PlayingCard, topCardOfNewLocation: PlayingCard | null): boolean {

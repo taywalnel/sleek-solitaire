@@ -122,4 +122,42 @@ describe('AppComponent', () => {
       })
     })
   })
+
+  describe('getCardsSittingOnTopOfCurrentCard', () => {
+    beforeEach(() => {
+      component.cards = [
+        {
+          suit: 'diamonds',
+          value: 'J',
+          isFacingUp: true,
+          location: {
+            type: 'tableau',
+            index: 3
+          }
+        },
+        {
+          suit: 'hearts',
+          value: '5',
+          isFacingUp: true,
+          location: {
+            type: 'tableau',
+            index: 3
+          }
+        }
+      ]
+    });
+
+    describe('when there are cards on top of current card', () => {
+      it('should return the cards', () => {
+        expect(component.getCardsSittingOnTopOfCurrentCard(component.cards[0])).toEqual([component.cards[1]]);
+      })
+    })
+
+    describe('when there are NO cards on top of current card', () => {
+      it('should return an empty array', () => {
+        
+        expect(component.getCardsSittingOnTopOfCurrentCard(component.cards[1])).toEqual([]);
+      })
+    })
+  })
 });
