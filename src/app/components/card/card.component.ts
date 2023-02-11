@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { fromEvent, map, merge, Observable, switchMap, takeUntil, throttleTime } from 'rxjs';
+import { filter, fromEvent, map, merge, Observable, switchMap, takeUntil, tap, throttleTime } from 'rxjs';
 import { AppComponent, PlayingCard } from '../../app.component';
 
 const CARD_RESET_TRANSITION_TIME = 300;
@@ -15,7 +15,7 @@ export class CardComponent implements AfterViewInit, OnInit {
 
   style = '';
   userIsMovingCard = false;
-  applyZIndex = false;
+  zIndex = 'unset';
   startingCardCoOrdinates: {x: number, y: number} | null;
   imageSrc: string;
   isRed: boolean;
@@ -24,6 +24,7 @@ export class CardComponent implements AfterViewInit, OnInit {
   mouseMove$: Observable<MouseEvent>;
   mouseDown$: Observable<MouseEvent>;
   mouseUp$: Observable<MouseEvent>;
+  mouseUpOnDocument$: Observable<MouseEvent>;
   cardMove$: Observable<string>;
   translateCard$: Observable<string>;
 
@@ -52,6 +53,13 @@ export class CardComponent implements AfterViewInit, OnInit {
     this.mouseDown$ = fromEvent<MouseEvent>(this.cardElement.nativeElement,'mousedown');
     this.mouseMove$ = fromEvent<MouseEvent>(document, 'mousemove');
     this.mouseUp$ = fromEvent<MouseEvent>(this.cardElement.nativeElement, 'mouseup');
+    this.mouseUpOnDocument$ = fromEvent<MouseEvent>(document, 'mouseup');
+
+    this.mouseUpOnDocument$.subscribe(() => {
+      setTimeout(() => {
+        this.zIndex = 'unset';
+      }, CARD_RESET_TRANSITION_TIME);
+    })
 
     this.cardMove$ = this.mouseDown$.pipe(
       switchMap(
@@ -59,16 +67,22 @@ export class CardComponent implements AfterViewInit, OnInit {
           return this.mouseMove$.pipe(
             throttleTime(5),
             map(move => {
+              const translation = `translate(${move.clientX - start.clientX}px, ${move.clientY - start.clientY}px)`;
               move.preventDefault();
               this.userIsMovingCard = true;
-              this.applyZIndex = true;
-              return `translate(${move.clientX - start.clientX}px, ${move.clientY - start.clientY}px)`;
+              this.zIndex = '100';
+              this.app.cardIsBeingMoved$.next({card: this.card, translation});
+              return translation;
           }),
             takeUntil(this.mouseUp$));
         })
     );
 
-    this.translateCard$ = merge(this.cardMove$, this.app.cardReset$);
+    this.translateCard$ = merge(this.cardMove$, this.app.cardReset$, this.app.additionalCardsToMove$.pipe(
+      filter((event) => event.additionalCardsToMove.includes(this.card)),
+      tap(() => this.zIndex = '101'),
+      map((event) => event.translation))
+    );
   }
 
   watchForCardDrop(){
@@ -76,7 +90,7 @@ export class CardComponent implements AfterViewInit, OnInit {
     .subscribe((event) => {
       this.userIsMovingCard = false;
       setTimeout(() => {
-        this.applyZIndex = false;
+        this.zIndex = 'unset';
       }, CARD_RESET_TRANSITION_TIME);
       const cardDropEvent: { card: PlayingCard, clientX: number, clientY: number } = { card: this.card, clientX: event.clientX, clientY: event.clientY }
       this.app.cardDrop$.next(cardDropEvent);
