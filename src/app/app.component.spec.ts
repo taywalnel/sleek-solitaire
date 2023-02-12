@@ -42,7 +42,7 @@ describe('AppComponent', () => {
         }
         component.cards.push(expectedCard);
 
-        expect(component.getTopCardForType('tableau', 1)).toEqual(expectedCard);
+        expect(component.getTopCardForType(expectedCard["location"])).toEqual(expectedCard);
       })
     })
 
@@ -50,7 +50,7 @@ describe('AppComponent', () => {
       it('should return null', () => {
         component.cards = [];
 
-        expect(component.getTopCardForType('tableau', 1)).toEqual(null);
+        expect(component.getTopCardForType({type: 'tableau', index: 1})).toEqual(null);
       })
     })
   })

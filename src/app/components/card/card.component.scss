@@ -4,11 +4,14 @@
   padding-bottom: 140%;
   border-radius: 6%;
   background-color: rgb(255, 255, 255);
-  border: 1px solid #333;
   cursor: grab;
 
-  &.useTransition {
+  &.use-transition {
     transition: transform 0.3s cubic-bezier(0.165, 0.840, 0.440, 1.000);
+  }
+
+  &.use-box-shadow {
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   }
 
   .card-content {
@@ -20,7 +23,7 @@
     font-family: 'Lato', sans-serif;
     padding: 10%;
     box-sizing: border-box;
-    font-size: 0.8rem;
+    font-size: 1rem;
     min-height: 0;
 
     &.red-card {
@@ -71,35 +74,7 @@
   }
 }
 
-.noselect {
-  -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Old versions of Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
-}
-
 img {
   height: 100%;
   pointer-events: none;
-}
-
-@media only screen and (min-width: 800px) {
-  .card-container .card-content .card-front {
-    font-size: 1.4rem;
-  }
-}
-
-@media only screen and (min-width: 950px) {
-  .card-container .card-content .card-front {
-    font-size: 1.1rem;
-  }
-}
-
-@media only screen and (min-width: 1050px) {
-  .card-container .card-content .card-front {
-    font-size: 1.3rem;
-  }
 }

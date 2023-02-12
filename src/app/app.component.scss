@@ -1,25 +1,100 @@
-.game-container {
+.root-container {
   width: 100vw;
   height: 100vh;
   background-color: #5A9C56;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-  .game-header-bar {
+  .header-bar {
     width: 100%;
-    height: 100px;
-    background-color: #333;
+    height: 80px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    background-color: #333;
+    font-family: 'Fjalla One', sans-serif;
+    color: white;
+    font-size: 1rem;
+    padding: 0 20px 0 20px;
+    box-sizing: border-box;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+    img {
+      height: 14px;
+      background-color: white;
+      border-radius: 20px;
+      padding: 6px;
+    }
+
+    .column {
+      flex: 1;
+      display: flex;
+
+      &.game-stats {
+        align-items: center;
+        gap: 20px;
+
+        .stat-container {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .label {
+          color: #BBBBBB;
+        }
+      }
+
+      &.game-header {
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        display: flex;
+        gap: 20px;
+      }
+
+      &.game-buttons {
+        justify-content: right;
+        align-items: center;
+        
+        button {
+          height: 40px;
+          border: unset;
+          border-radius: 20px;
+          padding: 0 8px;
+          background-color: #ffffff;
+          transition: background-color, transform 0.3s ease-in-out;
+          cursor: pointer;
+        }
+
+        button:hover {
+          // background-color: #ffffffc0;
+          transform: scale(1.2);
+        }
+      }
+    }
+
+
+  }
+
+  .square {
+    flex: 1;
+    position: relative;
+    width: 50%;
+    min-width: 800px;
+    height: 100%;
   }
 
   .game-board-container {
+    position: absolute;
+    width: 100%;
+
     padding: 40px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 40px;
 
-    .column {
+    .row {
       display: flex;
       gap: 10px;
 
@@ -32,7 +107,7 @@
       }
     }
 
-    .row {
+    .column {
       width: 100%;
     }
 

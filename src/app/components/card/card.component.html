@@ -3,8 +3,9 @@
   [style.transform]="translateCard$ | async"
   [style.top]="useTop ? stackingIndex * 25 + '%' : '0px'"
   [style.zIndex]="zIndex"
-  class="card-container noselect"
-  [class.useTransition]="!userIsMovingCard"
+  class="card-container no-select"
+  [class.use-transition]="!userIsMovingCard"
+  [class.use-box-shadow]="useBoxShadow"
 >
   <div class="card-content" [ngClass]="isRed ? 'red-card' : 'black-card'">
     <div *ngIf="card?.isFacingUp" class="card-front">
