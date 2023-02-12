@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
+import { cardPileTypes } from './constants/card-pile-types';
 import { deckOfCards } from './constants/deck-of-cards';
 
 export interface PlayingCard {
@@ -38,7 +39,9 @@ export class AppComponent implements OnInit, AfterViewInit {
   cardIsBeingMoved$ = new Subject<CardMovingEvent>;
   additionalCardsToMove$ = new Subject<AdditionalCardsToMoveEvent>;
   stockClicked$ = new Subject<boolean>;
-  cardPileElements: NodeList;
+  cardPileElements: Element[];
+  totalMoves = 0;
+  elapsedTimeInSeconds = 0;
 
   @ViewChild('tableau') tableauSection: ElementRef;
 
@@ -52,15 +55,16 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.cardPileElements = document.querySelectorAll('app-card-pile');
+    this.cardPileElements = Array.from(document.querySelectorAll('app-card-pile'));
   }
 
   watchForCardDrop(){
     this.cardDrop$.subscribe((event: { card: PlayingCard, clientX: number, clientY: number }) => {
       const locationCardWasDroppedOn = this.getLocationCardWasDroppedOn(event.card, {clientX: event.clientX, clientY: event.clientY});
       if(!locationCardWasDroppedOn) return this.cardReset$.next('translate(0px, 0px)');
+      if(JSON.stringify(locationCardWasDroppedOn) === JSON.stringify(event.card.location)) return this.cardReset$.next('translate(0px, 0px)');
 
-      const currentTopCardOnRow = this.getTopCardForType(locationCardWasDroppedOn.type, locationCardWasDroppedOn.index);
+      const currentTopCardOnRow = this.getTopCardForType(locationCardWasDroppedOn);
 
       if(AppComponent.cardIsAllowedToBeMovedToNewLocation(locationCardWasDroppedOn, event.card, currentTopCardOnRow)){
         const additionalCardsToUpdate = this.getCardsSittingOnTopOfCurrentCard(event.card);
@@ -68,7 +72,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         allCardsToUpdate.forEach((card) => {
           this.updateCardLocation(card, {type: locationCardWasDroppedOn.type, index: locationCardWasDroppedOn.index});
         })
-        
+        this.totalMoves += 1;
         this.setLastCardInEachRowToFaceUp();
       }else {
         this.cardReset$.next('translate(0px, 0px)');
@@ -78,7 +82,8 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   watchForDeckClick(){
     this.stockClicked$.subscribe(() => {
-      const cardToMove = this.getTopCardForType('stock');
+      const cardToMove = this.getTopCardForType({type: 'stock', index: 1});
+      this.totalMoves += 1;
       if(!cardToMove){
         this.resetStock();
       }else{
@@ -104,8 +109,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     const indexOfCurrentCard = cardsInSameLocation.findIndex(card => JSON.stringify(card) === JSON.stringify(currentCard));
     return cardsInSameLocation.slice(indexOfCurrentCard + 1);
   }
-
-  
 
   resetStock(){
     const updatedCards = this.cards
@@ -181,12 +184,10 @@ export class AppComponent implements OnInit, AfterViewInit {
     return false;
   }
 
-  getTopCardForType(type: string, index?: number): PlayingCard | null {
+  getTopCardForType(location: PlayingCard["location"]): PlayingCard | null {
     const cardsInReverseOrder = [...this.cards].reverse();
     const indexOfTopCardReversed = cardsInReverseOrder.findIndex((card) => {
-      if(card.location.type !== type) return false;
-      if(index && card.location.index !== index) return false;
-      return true;
+      return JSON.stringify(card.location) === JSON.stringify(location)
     });
     if(indexOfTopCardReversed === -1) return null;
 
@@ -202,18 +203,13 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.cards.push(cardToUpdate);
   }
 
-  getLocationCardWasDroppedOn(movedCard: PlayingCard, cardDropPosition: {clientX: number, clientY: number}): PlayingCard["location"] | undefined {
-    const listOfCardsWithPositions: { location: PlayingCard["location"], rect: { top: number, bottom: number, left: number, right: number }}[] = this.getBoundingClientRectForEachCard();
-    const previousLocationOfCard = movedCard.location;
+  getLocationCardWasDroppedOn(card: PlayingCard, positionOfCardOnMouseUp: {clientX: number, clientY: number}): PlayingCard["location"] | undefined {
+    const positionOfEachCardPile: { location: PlayingCard["location"], rect: { top: number, bottom: number, left: number, right: number }}[] = this.getBoundingClientRectForEachCardPileExpect(card.location);
     let locationCardWasDroppedOn;
 
-    listOfCardsWithPositions.forEach((cardToCheck) => {
-      if(movedCard.location.type === 'tableau'){
-        if(cardToCheck.location.index == previousLocationOfCard.index) return;
-      }
-
-      const cardInSectionHorizontally = cardDropPosition.clientX > cardToCheck.rect.left && cardDropPosition.clientX < cardToCheck.rect.right;
-      const cardInSectionVertically = cardDropPosition.clientY > cardToCheck.rect.top && cardDropPosition.clientY < cardToCheck.rect.bottom;
+    positionOfEachCardPile.forEach((cardToCheck) => {
+      const cardInSectionHorizontally = positionOfCardOnMouseUp.clientX > cardToCheck.rect.left && positionOfCardOnMouseUp.clientX < cardToCheck.rect.right;
+      const cardInSectionVertically = positionOfCardOnMouseUp.clientY > cardToCheck.rect.top && positionOfCardOnMouseUp.clientY < cardToCheck.rect.bottom;
       if(cardInSectionHorizontally && cardInSectionVertically){
         locationCardWasDroppedOn = cardToCheck.location;
       }
@@ -221,88 +217,50 @@ export class AppComponent implements OnInit, AfterViewInit {
     return locationCardWasDroppedOn;
   }
 
-  getBoundingClientRectForEachCard(){
-    const cardPileElements: { location: PlayingCard["location"], rect: { top: number, bottom: number, left: number, right: number }}[] = [];
-    const cardPileLocations = [
-      {
-        type: 'deck',
-        index: 1
-      },
-      {
-        type: 'waste',
-        index: 1
-      },
-      {
-        type: 'foundation',
-        index: 1
-      },
-      {
-        type: 'foundation',
-        index: 2
-      },
-      {
-        type: 'foundation',
-        index: 3
-      },
-      {
-        type: 'foundation',
-        index: 4
-      },
-      {
-        type: 'tableau',
-        index: 1
-      },
-      {
-        type: 'tableau',
-        index: 2
-      },
-      {
-        type: 'tableau',
-        index: 3
-      },
-      {
-        type: 'tableau',
-        index: 4
-      },
-      {
-        type: 'tableau',
-        index: 5
-      },
-      {
-        type: 'tableau',
-        index: 6
-      },
-      {
-        type: 'tableau',
-        index: 7
-      },
-    ]
-    this.cardPileElements.forEach((cardPile, index) => {
-      const childElementDimensions: DOMRect[] = [];
+  getBoundingClientRectForEachCardPileExpect(cardPileToExclude: PlayingCard["location"]){
+    const boundingClientRectForEachPile: { location: PlayingCard["location"], rect: { top: number, bottom: number, left: number, right: number }}[] = [];
+    const allPossibleCardPileLocations = [...cardPileTypes];
+    const relevantCardPileDOMElements = [...this.cardPileElements];
+    const indexOfCardPileToIgnore = allPossibleCardPileLocations.findIndex(cardPile => JSON.stringify(cardPile) === JSON.stringify(cardPileToExclude));
+    
+    allPossibleCardPileLocations.splice(indexOfCardPileToIgnore, 1);
+    relevantCardPileDOMElements.splice(indexOfCardPileToIgnore, 1)
+
+    relevantCardPileDOMElements.forEach((cardPile, index) => {
+      const positionsOfEachCardInGivenPile: DOMRect[] = [];
       cardPile.childNodes[0].childNodes.forEach((card: any) => {
         if(card.nodeName === 'APP-CARD'){
-          childElementDimensions.push(card.childNodes[0].getBoundingClientRect());
+          positionsOfEachCardInGivenPile.push(card.childNodes[0].getBoundingClientRect());
         }
         if(card.nodeName === 'DIV'){
-          childElementDimensions.push(card.getBoundingClientRect());
+          positionsOfEachCardInGivenPile.push(card.getBoundingClientRect());
         }
       })
-      cardPileElements.push({
-        location: cardPileLocations[index],
+      boundingClientRectForEachPile.push({
+        location: allPossibleCardPileLocations[index],
         rect: {
-          top: Math.min(...childElementDimensions.map(element => element.top)),
-          bottom: Math.max(...childElementDimensions.map(element => element.bottom)),
-          left: childElementDimensions[0].left,
-          right: childElementDimensions[0].right
+          top: Math.min(...positionsOfEachCardInGivenPile.map(element => element.top)),
+          bottom: Math.max(...positionsOfEachCardInGivenPile.map(element => element.bottom)),
+          left: positionsOfEachCardInGivenPile[0].left,
+          right: positionsOfEachCardInGivenPile[0].right
         }
       })
     })
-    return cardPileElements;
+    return boundingClientRectForEachPile;
   }
 
   startGame(){
+    this.totalMoves = 0;
+    this.startTimer();
     this.cards = this.setUpCards();
     this.setLastCardInEachRowToFaceUp();
+  }
+
+  startTimer(){
+    this.elapsedTimeInSeconds = 0;
+    setInterval(() => {
+      this.elapsedTimeInSeconds++;
+    }, 1000);
   }
 
   setUpCards(): PlayingCard[] {

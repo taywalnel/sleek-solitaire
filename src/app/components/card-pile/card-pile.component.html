@@ -1,12 +1,13 @@
 <div #rowElement class="row">
-  <div class="card-placeholder">
+  <div class="card-placeholder no-select">
     <div *ngIf="placeHolderImageSrc" class="image-container">
-      <img [src]="placeHolderImageSrc">
+      <img [src]="placeHolderImageSrc" draggable="false">
     </div>
   </div>
   <app-card
     *ngFor="let card of cards; let i = index; last as isLast"
     [card]="card"
     [stackingIndex]="i"
+    [isLastInPile]="isLast"
   ></app-card>
 </div>

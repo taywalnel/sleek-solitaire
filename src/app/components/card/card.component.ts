@@ -12,6 +12,7 @@ const CARD_RESET_TRANSITION_TIME = 300;
 export class CardComponent implements AfterViewInit, OnInit {
   @Input() card: PlayingCard;
   @Input() stackingIndex: number;
+  @Input() isLastInPile: boolean;
 
   style = '';
   userIsMovingCard = false;
@@ -31,6 +32,12 @@ export class CardComponent implements AfterViewInit, OnInit {
   @ViewChild('cardElement') cardElement: ElementRef;
 
   constructor(private app: AppComponent) {}
+
+  get useBoxShadow() {
+    if(this.isLastInPile) return true;
+    if(this.card.location.type === 'tableau') return true
+    return false
+  }
 
   ngOnInit(){
     this.imageSrc = `assets/images/${this.card.suit.slice(0, -1)}.svg`;
