@@ -1,5 +1,10 @@
 import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { fromEvent } from 'rxjs';
+import { fromEvent, Subject } from 'rxjs';
+import { AppComponent } from 'src/app/app.component';
+
+export interface Settings {
+  nightMode: boolean;
+}
 
 @Component({
   selector: 'app-header-bar',
@@ -11,8 +16,16 @@ export class HeaderBarComponent implements AfterViewInit {
   @Input() elapsedTimeInSeconds = 0;
   @Output() resetGameEvent = new EventEmitter<null>;
 
+  settings: Settings = {
+    nightMode: false
+  };
   rotateImageStyling: string = '';
   rotationCount = 0;
+  showSettingsMenu = false;
+  nightModeActive = false;
+
+  constructor(private app: AppComponent){}
+
 
   @ViewChild('resetGameButton') resetGameButton: ElementRef;
 
@@ -21,6 +34,15 @@ export class HeaderBarComponent implements AfterViewInit {
       this.rotationCount =  this.rotationCount - 180;
       this.rotateImageStyling = `rotate(${this.rotationCount}deg)`;
     });
+  }
+
+  settingsClickHandler(){
+    this.showSettingsMenu = !this.showSettingsMenu;
+  }
+
+  toggleNightMode(){
+    this.settings.nightMode = !this.settings.nightMode;
+    this.app.settings$.next(this.settings);
   }
 
   get formattedTotalMoves() {

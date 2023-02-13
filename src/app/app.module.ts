@@ -6,6 +6,8 @@ import { AppComponent } from './app.component';
 import { CardPileComponent } from './components/card-pile/card-pile.component';
 import { CardComponent } from './components/card/card.component';
 import { HeaderBarComponent } from './components/header-bar/header-bar.component';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -16,7 +18,9 @@ import { HeaderBarComponent } from './components/header-bar/header-bar.component
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    MatSlideToggleModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

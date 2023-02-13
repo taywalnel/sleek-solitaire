@@ -1,4 +1,4 @@
-<div class="root-container">
+<div class="root-container" [class.night-mode]="nightMode">
   <app-header-bar [totalMoves]="totalMoves" [elapsedTimeInSeconds]="elapsedTimeInSeconds" (resetGameEvent)="resetGame()"></app-header-bar>
   <div class="square">
     <div class="game-board-container">

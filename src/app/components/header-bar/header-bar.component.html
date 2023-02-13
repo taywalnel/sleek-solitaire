@@ -1,4 +1,8 @@
-<div class="header-bar">
+<div class="header-bar" [class.show]="showSettingsMenu">
+  <div class="settings-menu">
+    <img src="../assets/images/night.svg">
+    <mat-slide-toggle (click)="toggleNightMode()"></mat-slide-toggle>
+  </div>
   <div class="column game-stats">
     <div class="stat-container">
       <img src="../assets/images/moves.svg">
@@ -19,6 +23,9 @@
   <div class="column game-buttons">
     <button #resetGameButton (click)="resetGame()">
       <img [style.transform]="rotateImageStyling" src="../assets/images/refresh.svg">
+    </button>
+    <button class="settings-button" (click)="settingsClickHandler()">
+      <img src="../assets/images/settings.svg">
     </button>
   </div>
 </div>

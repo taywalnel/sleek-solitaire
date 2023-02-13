@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
-import { interval, Observable, of, Subject, Subscription } from 'rxjs';
+import { interval, Subject, Subscription } from 'rxjs';
+import { Settings } from './components/header-bar/header-bar.component';
 import { cardPileTypes } from './constants/card-pile-types';
 import { deckOfCards } from './constants/deck-of-cards';
 
@@ -44,6 +45,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   totalMoves = 0;
   elapsedTimeInSeconds = 0;
   gameStarted = false;
+  settings$ = new Subject<Settings>;
+  nightMode = false;
 
   @ViewChild('tableau') tableauSection: ElementRef;
 
@@ -54,6 +57,9 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.watchForCardDrop();
     this.watchForDeckClick();
     this.watchForCardMove();
+    this.settings$.subscribe((settings) => {
+      this.nightMode = settings.nightMode;
+    })
   }
 
   ngAfterViewInit(): void {
