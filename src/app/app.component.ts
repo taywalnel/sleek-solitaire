@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
-import { Subject } from 'rxjs';
+import { interval, Observable, of, Subject, Subscription } from 'rxjs';
 import { cardPileTypes } from './constants/card-pile-types';
 import { deckOfCards } from './constants/deck-of-cards';
 
@@ -39,9 +39,11 @@ export class AppComponent implements OnInit, AfterViewInit {
   cardIsBeingMoved$ = new Subject<CardMovingEvent>;
   additionalCardsToMove$ = new Subject<AdditionalCardsToMoveEvent>;
   stockClicked$ = new Subject<boolean>;
+  intervalSubsription: Subscription;
   cardPileElements: Element[];
   totalMoves = 0;
   elapsedTimeInSeconds = 0;
+  gameStarted = false;
 
   @ViewChild('tableau') tableauSection: ElementRef;
 
@@ -60,6 +62,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   watchForCardDrop(){
     this.cardDrop$.subscribe((event: { card: PlayingCard, clientX: number, clientY: number }) => {
+      if(!this.gameStarted) this.startTimer();
       const locationCardWasDroppedOn = this.getLocationCardWasDroppedOn(event.card, {clientX: event.clientX, clientY: event.clientY});
       if(!locationCardWasDroppedOn) return this.cardReset$.next('translate(0px, 0px)');
       if(JSON.stringify(locationCardWasDroppedOn) === JSON.stringify(event.card.location)) return this.cardReset$.next('translate(0px, 0px)');
@@ -82,6 +85,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   watchForDeckClick(){
     this.stockClicked$.subscribe(() => {
+      if(!this.gameStarted) this.startTimer();
       const cardToMove = this.getTopCardForType({type: 'stock', index: 1});
       this.totalMoves += 1;
       if(!cardToMove){
@@ -127,7 +131,6 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   public static cardIsAllowedToBeMovedToNewLocation(newLocation: PlayingCard["location"], card: PlayingCard, topCardOfNewLocation: PlayingCard | null): boolean {
-    // tableau
     if(newLocation.type === 'tableau'){
       if(!topCardOfNewLocation){
         if(card.value === 'K') return true
@@ -138,7 +141,6 @@ export class AppComponent implements OnInit, AfterViewInit {
       return AppComponent.cardValueIsOneLowerThanNext(card.value, topCardOfNewLocation.value);
     }
 
-    // foundation
     if(newLocation.type === 'foundation'){
       if(!topCardOfNewLocation){
         if(card.value === 'A') return true;
@@ -251,16 +253,28 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   startGame(){
     this.totalMoves = 0;
-    this.startTimer();
     this.cards = this.setUpCards();
     this.setLastCardInEachRowToFaceUp();
   }
 
-  startTimer(){
+  resetGame(){
+    this.gameStarted = false;
+    if(this.intervalSubsription){
+      this.intervalSubsription.unsubscribe();
+    }
     this.elapsedTimeInSeconds = 0;
-    setInterval(() => {
+    this.startGame();
+  };
+
+  startTimer(){
+    this.gameStarted = true;
+    this.elapsedTimeInSeconds = 0;
+    if(this.intervalSubsription){
+      this.intervalSubsription.unsubscribe();
+    }
+    this.intervalSubsription = interval(1000).subscribe(() => {
       this.elapsedTimeInSeconds++;
-    }, 1000);
+    })
   }
 
   setUpCards(): PlayingCard[] {

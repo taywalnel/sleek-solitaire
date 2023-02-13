@@ -1,0 +1,24 @@
+<div class="header-bar">
+  <div class="column game-stats">
+    <div class="stat-container">
+      <img src="../assets/images/moves.svg">
+      {{ formattedTotalMoves }}
+    </div>
+    <div class="stat-container large-img-wrapper">
+      <img src="../assets/images/clock.svg">
+      {{ formattedElapsedTime }}
+    </div>
+  </div>
+  <div class="column game-header">
+    <img src="../assets/images/heart.svg">
+    <img src="../assets/images/club.svg">
+    <span>Solitaire</span>
+    <img src="../assets/images/diamond.svg">
+    <img src="../assets/images/spade.svg">
+  </div>
+  <div class="column game-buttons">
+    <button #resetGameButton (click)="resetGame()">
+      <img [style.transform]="rotateImageStyling" src="../assets/images/refresh.svg">
+    </button>
+  </div>
+</div>
