@@ -1,31 +1,35 @@
 <div class="header-bar" [class.show]="showSettingsMenu">
   <div class="settings-menu">
-    <img src="../assets/images/night.svg">
+    <img class="medium-image" src="../assets/images/night.svg" />
     <mat-slide-toggle (click)="toggleNightMode()"></mat-slide-toggle>
   </div>
   <div class="column game-stats">
     <div class="stat-container">
-      <img src="../assets/images/moves.svg">
+      <img class="medium-image" src="../assets/images/moves.svg" />
       {{ formattedTotalMoves }}
     </div>
     <div class="stat-container large-img-wrapper">
-      <img src="../assets/images/clock.svg">
+      <img class="medium-image" src="../assets/images/clock.svg" />
       {{ formattedElapsedTime }}
     </div>
   </div>
   <div class="column game-header">
-    <img src="../assets/images/heart.svg">
-    <img src="../assets/images/club.svg">
+    <img src="../assets/images/heart.svg" />
+    <img src="../assets/images/club.svg" />
     <span>Solitaire</span>
-    <img src="../assets/images/diamond.svg">
-    <img src="../assets/images/spade.svg">
+    <img src="../assets/images/diamond.svg" />
+    <img src="../assets/images/spade.svg" />
   </div>
   <div class="column game-buttons">
     <button #resetGameButton (click)="resetGame()">
-      <img [style.transform]="rotateImageStyling" src="../assets/images/refresh.svg">
+      <img
+        class="medium-image"
+        [style.transform]="rotateImageStyling"
+        src="../assets/images/refresh.svg"
+      />
     </button>
     <button class="settings-button" (click)="settingsClickHandler()">
-      <img src="../assets/images/settings.svg">
+      <img class="medium-image" src="../assets/images/settings2.svg" />
     </button>
   </div>
 </div>

@@ -11,11 +11,9 @@
     <div *ngIf="card?.isFacingUp" class="card-front">
       <div class="row top">
         <div class="value-container">
-          <span>{{ card.value }}</span>
+          <span>{{ card.value }} </span>
         </div>
-        <div class="suit-container">
-          <img [src]="imageSrc" />
-        </div>
+        <img [src]="imageSrc" />
       </div>
       <div class="row middle">
         <img [src]="imageSrc" />
@@ -24,9 +22,7 @@
         <div class="value-container">
           <span>{{ card.value }}</span>
         </div>
-        <div class="suit-container">
-          <img [src]="imageSrc" />
-        </div>
+        <img [src]="imageSrc" />
       </div>
     </div>
     <div *ngIf="!card?.isFacingUp" class="card-back"></div>

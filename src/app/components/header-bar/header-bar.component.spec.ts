@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { AppComponent } from 'src/app/app.component';
 
 import { HeaderBarComponent } from './header-bar.component';
 
@@ -8,9 +9,9 @@ describe('HeaderBarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ HeaderBarComponent ]
-    })
-    .compileComponents();
+      declarations: [HeaderBarComponent],
+      providers: [AppComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(HeaderBarComponent);
     component = fixture.componentInstance;
