@@ -1,95 +1,118 @@
 :host {
-    width: 100%;
+  width: 100%;
 }
 
 .header-bar {
-    width: 100%;
-    height: 80px;
+  width: 100%;
+  height: 80px;
+  padding: 0 20px 0 20px;
+  box-sizing: border-box;
+  display: flex;
+  background-color: #333;
+  font-family: "Fjalla One", sans-serif;
+  color: white;
+  font-size: 1rem;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+  &.show {
+    .settings-button {
+      background-color: #807373;
+    }
+
+    .settings-menu {
+      opacity: 1;
+    }
+  }
+
+  .settings-menu {
+    position: absolute;
+    padding: 20px;
+    right: 0;
+    top: 80px;
+    z-index: 10;
     display: flex;
-    background-color: #333;
-    font-family: 'Fjalla One', sans-serif;
-    color: white;
-    font-size: 1rem;
-    padding: 0 20px 0 20px;
-    box-sizing: border-box;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    gap: 20px;
+    align-items: center;
+    transition: opacity 0.3s cubic-bezier(0.58, 0.17, 0.34, 0.74);
+    opacity: 0;
 
-    .column {
-      flex: 1;
-      display: flex;
-    }
-
-    .game-stats {
-      align-items: center;
-      gap: 5px;
-      display: flex;
-      gap: 20px;
-
-      img {
-        height: 20px;
-        background-color: white;
-        border-radius: 20px;
-        padding: 10px;
-        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    ::ng-deep.mat-slide-toggle.mat-checked:not(.mat-disabled) {
+      .mat-slide-toggle-thumb {
+        background-color: #333;
       }
-
-      .stat-container {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .label {
-        color: #BBBBBB;
-      }
-    }
-
-    .game-header {
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      display: flex;
-      gap: 20px;
-      
-      img {
-        height: 14px;
-        background-color: white;
-        border-radius: 20px;
-        padding: 6px;
-      }
-    }
-
-    .game-buttons {
-      justify-content: right;
-      align-items: center;
-      display: flex;
-      gap: 20px;
-      
-      button {
-        height: 40px;
-        width: 40px;
-        border: unset;
-        border-radius: 20px;
-        padding: 0 8px;
+      .mat-slide-toggle-bar {
         background-color: #ffffff;
-        transition: background-color, transform 0.3s ease-in-out;
-        cursor: pointer;
-        display: grid;
-        place-items: center;
-        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-
-        img {
-          height: 20px;
-          transition: transform 0.3s ease-in-out;
-        }
-      }
-
-      button:hover {
-        transform: scale(1.2);
-      }
-
-      button:active {
-        background-color: #ffffffc0;
       }
     }
   }
+
+  .column {
+    flex: 1;
+    display: flex;
+  }
+
+  .game-stats {
+    align-items: center;
+    gap: 5px;
+    display: flex;
+    gap: 20px;
+
+    .stat-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+  }
+
+  .game-header {
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    display: flex;
+    gap: 20px;
+
+    img {
+      height: 14px;
+      background-color: white;
+      border-radius: 20px;
+      padding: 6px;
+    }
+  }
+
+  .game-buttons {
+    justify-content: right;
+    align-items: center;
+    display: flex;
+    gap: 20px;
+
+    button {
+      height: 40px;
+      width: 40px;
+      padding: 0;
+      border: unset;
+      border-radius: 20px;
+      transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+      cursor: pointer;
+
+      img {
+        transition: transform 0.3s ease-in-out;
+      }
+    }
+
+    button:active {
+      transform: scale(0.9);
+    }
+
+    button:active {
+      background-color: #ffffffc0;
+    }
+  }
+}
+
+.medium-image {
+  height: 20px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  padding: 10px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
