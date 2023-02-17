@@ -15,6 +15,14 @@
     }
   }
 
+  app-game-won-modal {
+    display: none;
+
+    &.show {
+      display: grid;
+    }
+  }
+
   .square {
     flex: 1;
     position: relative;
