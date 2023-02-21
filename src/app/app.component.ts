@@ -5,7 +5,7 @@ import {
   ElementRef,
   Inject,
   OnInit,
-  ViewChild,
+  ViewChild
 } from '@angular/core';
 import { interval, Subject, Subscription } from 'rxjs';
 import { Settings } from './components/header-bar/header-bar.component';
@@ -54,6 +54,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   gameStarted = false;
   settings$ = new Subject<Settings>();
   nightMode = false;
+  showGameWonModal = true;
 
   @ViewChild('tableau') tableauSection: ElementRef;
 
@@ -368,7 +369,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   resetGame() {
     this.gameStarted = false;
     if (this.intervalSubsription) {
-      this.intervalSubsription.unsubscribe();
+      this.stopTimer();
     }
     this.elapsedTimeInSeconds = 0;
     this.startGame();
@@ -377,12 +378,20 @@ export class AppComponent implements OnInit, AfterViewInit {
   startTimer() {
     this.gameStarted = true;
     this.elapsedTimeInSeconds = 0;
-    if (this.intervalSubsription) {
-      this.intervalSubsription.unsubscribe();
-    }
     this.intervalSubsription = interval(1000).subscribe(() => {
       this.elapsedTimeInSeconds++;
     });
+  }
+
+  stopTimer(){
+    this.intervalSubsription.unsubscribe();
+  }
+
+  gameWonModalEventHandler(command: string){
+    this.showGameWonModal = false;
+    if(command === 'startNewGame'){
+      this.resetGame();
+    }
   }
 
   setUpCards(): PlayingCard[] {

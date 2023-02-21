@@ -1,0 +1,29 @@
+<div class="modal-container">
+  <div class="header">Congratulations</div>
+  <div class="body">
+    <div class="divider">
+      <hr />
+      <span>YOU WON IN:</span>
+      <hr />
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <span>MOVES</span>
+        <span class="value">20</span>
+      </div>
+      <div class="stat">
+        <span>TIME</span>
+        <span class="value">1:06</span>
+      </div>
+    </div>
+    <hr />
+  </div>
+  <div class="footer">
+    <button (click)="closeHandler()">
+      <img class="medium-image" src="../assets/images/close.svg" />
+    </button>
+    <button (click)="startNewGameHandler()">
+      <img class="medium-image" src="../assets/images/refresh.svg" />
+    </button>
+  </div>
+</div>

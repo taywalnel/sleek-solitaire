@@ -4,6 +4,10 @@
     [elapsedTimeInSeconds]="elapsedTimeInSeconds"
     (resetGameEvent)="resetGame()"
   ></app-header-bar>
+  <app-game-won-modal
+    [class.show]="showGameWonModal"
+    (modalEventEmitter)="gameWonModalEventHandler($event)"
+  ></app-game-won-modal>
   <div class="square">
     <div class="game-board-container">
       <div class="row stock-and-foundation">
