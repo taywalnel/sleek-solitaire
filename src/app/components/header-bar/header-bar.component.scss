@@ -15,10 +15,6 @@
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 
   &.show {
-    .settings-button {
-      background-color: #807373;
-    }
-
     .settings-menu {
       opacity: 1;
     }
@@ -84,35 +80,5 @@
     align-items: center;
     display: flex;
     gap: 20px;
-
-    button {
-      height: 40px;
-      width: 40px;
-      padding: 0;
-      border: unset;
-      border-radius: 20px;
-      transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
-      cursor: pointer;
-
-      img {
-        transition: transform 0.3s ease-in-out;
-      }
-    }
-
-    button:active {
-      transform: scale(0.9);
-    }
-
-    button:active {
-      background-color: #ffffffc0;
-    }
   }
-}
-
-.medium-image {
-  height: 20px;
-  background-color: #ffffff;
-  border-radius: 20px;
-  padding: 10px;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }

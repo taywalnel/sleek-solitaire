@@ -3,20 +3,17 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 @Component({
   selector: 'app-game-won-modal',
   templateUrl: './game-won-modal.component.html',
-  styleUrls: ['./game-won-modal.component.scss']
+  styleUrls: ['./game-won-modal.component.scss'],
 })
-export class GameWonModalComponent implements OnInit {
-  @Output() modalEventEmitter = new EventEmitter;
-  constructor() { }
+export class GameWonModalComponent {
+  @Output() modalEventEmitter = new EventEmitter();
+  constructor() {}
 
-  ngOnInit(): void {
-  }
-
-  closeHandler(){
+  closeHandler() {
     this.modalEventEmitter.emit('closeModal');
   }
 
-  startNewGameHandler(){
+  startNewGameHandler() {
     this.modalEventEmitter.emit('startNewGame');
   }
 }
