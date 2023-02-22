@@ -5,7 +5,7 @@ import {
   ElementRef,
   Inject,
   OnInit,
-  ViewChild
+  ViewChild,
 } from '@angular/core';
 import { interval, Subject, Subscription } from 'rxjs';
 import { Settings } from './components/header-bar/header-bar.component';
@@ -54,7 +54,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   gameStarted = false;
   settings$ = new Subject<Settings>();
   nightMode = false;
-  showGameWonModal = true;
+  showGameWonModal = false;
 
   @ViewChild('tableau') tableauSection: ElementRef;
 
@@ -114,6 +114,12 @@ export class AppComponent implements OnInit, AfterViewInit {
           });
           this.totalMoves += 1;
           this.setLastCardInEachRowToFaceUp();
+          if (
+            locationCardWasDroppedOn.type === 'foundation' &&
+            this.isGameFinished()
+          ) {
+            this.openGameWonModal();
+          }
         } else {
           this.cardReset$.next('translate(0px, 0px)');
         }
@@ -383,15 +389,23 @@ export class AppComponent implements OnInit, AfterViewInit {
     });
   }
 
-  stopTimer(){
+  stopTimer() {
     this.intervalSubsription.unsubscribe();
   }
 
-  gameWonModalEventHandler(command: string){
+  gameWonModalEventHandler(command: string) {
     this.showGameWonModal = false;
-    if(command === 'startNewGame'){
+    if (command === 'startNewGame') {
       this.resetGame();
     }
+  }
+
+  openGameWonModal() {
+    this.showGameWonModal = true;
+  }
+
+  isGameFinished(): boolean {
+    return !this.cards.find((card) => card.location.type !== 'foundation');
   }
 
   setUpCards(): PlayingCard[] {

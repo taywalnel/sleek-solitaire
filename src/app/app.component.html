@@ -5,6 +5,8 @@
     (resetGameEvent)="resetGame()"
   ></app-header-bar>
   <app-game-won-modal
+    [totalMoves]="totalMoves"
+    [elapsedTimeInSeconds]="elapsedTimeInSeconds"
     [class.show]="showGameWonModal"
     (modalEventEmitter)="gameWonModalEventHandler($event)"
   ></app-game-won-modal>
