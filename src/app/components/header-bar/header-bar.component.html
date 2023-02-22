@@ -1,15 +1,15 @@
 <div class="header-bar" [class.show]="showSettingsMenu">
   <div class="settings-menu">
-    <img class="medium-image" src="../assets/images/night.svg" />
+    <app-icon imageSrc="../assets/images/night.svg"></app-icon>
     <mat-slide-toggle (click)="toggleNightMode()"></mat-slide-toggle>
   </div>
   <div class="column game-stats">
     <div class="stat-container">
-      <img class="medium-image" src="../assets/images/moves.svg" />
+      <app-icon imageSrc="../assets/images/moves.svg"></app-icon>
       {{ formattedTotalMoves }}
     </div>
     <div class="stat-container large-img-wrapper">
-      <img class="medium-image" src="../assets/images/clock.svg" />
+      <app-icon imageSrc="../assets/images/clock.svg"></app-icon>
       {{ formattedElapsedTime }}
     </div>
   </div>
@@ -21,15 +21,14 @@
     <img src="../assets/images/spade.svg" />
   </div>
   <div class="column game-buttons">
-    <button #resetGameButton (click)="resetGame()">
-      <img
-        class="medium-image"
-        [style.transform]="rotateImageStyling"
-        src="../assets/images/refresh.svg"
-      />
-    </button>
-    <button class="settings-button" (click)="settingsClickHandler()">
-      <img class="medium-image" src="../assets/images/settings2.svg" />
-    </button>
+    <app-button
+      imageSrc="../assets/images/refresh.svg"
+      [useAnimation]="true"
+      (clickEmitter)="resetGame()"
+    ></app-button>
+    <app-button
+      imageSrc="../assets/images/settings2.svg"
+      (clickEmitter)="settingsClickHandler()"
+    ></app-button>
   </div>
 </div>

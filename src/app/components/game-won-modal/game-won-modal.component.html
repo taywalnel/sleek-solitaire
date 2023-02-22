@@ -19,11 +19,13 @@
     <hr />
   </div>
   <div class="footer">
-    <button (click)="closeHandler()">
-      <img class="medium-image" src="../assets/images/close.svg" />
-    </button>
-    <button (click)="startNewGameHandler()">
-      <img class="medium-image" src="../assets/images/refresh.svg" />
-    </button>
+    <app-button
+      imageSrc="../assets/images/close.svg"
+      (clickEmitter)="closeHandler()"
+    ></app-button>
+    <app-button
+      imageSrc="../assets/images/refresh.svg"
+      (clickEmitter)="startNewGameHandler()"
+    ></app-button>
   </div>
 </div>

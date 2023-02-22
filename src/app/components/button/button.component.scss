@@ -1,0 +1,15 @@
+button {
+  padding: 0;
+  border: unset;
+  border-radius: 20px;
+  transition: transform 0.3s ease-in-out;
+  cursor: pointer;
+
+  app-icon {
+    transition: transform 0.3s ease-in-out;
+  }
+}
+
+button:active {
+  transform: scale(0.9);
+}

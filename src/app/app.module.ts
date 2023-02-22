@@ -9,6 +9,8 @@ import { HeaderBarComponent } from './components/header-bar/header-bar.component
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GameWonModalComponent } from './components/game-won-modal/game-won-modal.component';
+import { IconComponent } from './components/icon/icon.component';
+import { ButtonComponent } from './components/button/button.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +18,9 @@ import { GameWonModalComponent } from './components/game-won-modal/game-won-moda
     CardPileComponent,
     CardComponent,
     HeaderBarComponent,
-    GameWonModalComponent
+    GameWonModalComponent,
+    IconComponent,
+    ButtonComponent
   ],
   imports: [
     BrowserModule,

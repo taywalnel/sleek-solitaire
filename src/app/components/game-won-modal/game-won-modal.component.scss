@@ -31,7 +31,7 @@
   .body {
     font-size: 16px;
 
-    .divider{
+    .divider {
       display: flex;
       flex: 1;
       align-items: center;
@@ -47,7 +47,7 @@
       display: flex;
       padding: 20px 0;
 
-      .stat{
+      .stat {
         flex-grow: 1;
         display: flex;
         flex-direction: column;
@@ -63,27 +63,5 @@
   .footer {
     display: flex;
     justify-content: space-between;
-
-    button {
-      height: 40px;
-      width: 40px;
-      padding: 0;
-      border: unset;
-      border-radius: 20px;
-      transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
-      cursor: pointer;
-
-      img {
-        transition: transform 0.3s ease-in-out;
-      }
-    }
   }
-}
-
-.medium-image {
-  height: 20px;
-  background-color: #ffffff;
-  border-radius: 20px;
-  padding: 10px;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
