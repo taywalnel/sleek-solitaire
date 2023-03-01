@@ -1,5 +1,6 @@
 <button #button (click)="clickHandler()">
   <app-icon
+    [class.use-animation]="useAnimation"
     [imageSrc]="imageSrc"
     [style.transform]="rotateImageStyling"
   ></app-icon>
