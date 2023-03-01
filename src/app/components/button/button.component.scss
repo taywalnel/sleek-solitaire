@@ -5,8 +5,13 @@ button {
   transition: transform 0.3s ease-in-out;
   cursor: pointer;
 
-  app-icon {
+  app-icon.use-animation {
     transition: transform 0.3s ease-in-out;
+  }
+
+  app-icon::ng-deep .icon-container:hover {
+    transition: outline 0.3s;
+    outline: 4px solid #599c56a9;
   }
 }
 
