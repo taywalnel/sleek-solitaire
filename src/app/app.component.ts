@@ -114,10 +114,8 @@ export class AppComponent implements OnInit, AfterViewInit {
           });
           this.totalMoves += 1;
           this.setLastCardInEachRowToFaceUp();
-          if (
-            locationCardWasDroppedOn.type === 'foundation' &&
-            this.isGameFinished()
-          ) {
+          if (this.isGameFinished()) {
+            this.stopTimer();
             this.openGameWonModal();
           }
         } else {
