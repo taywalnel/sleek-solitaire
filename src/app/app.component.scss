@@ -66,4 +66,12 @@
       transition: background-color 0.8s cubic-bezier(0.58, 0.17, 0.34, 0.74);
     }
   }
+
+  .footer {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 0 10px 0 0;
+    font-size: 12px;
+  }
 }
