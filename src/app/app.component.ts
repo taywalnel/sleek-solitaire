@@ -79,14 +79,11 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   watchForCardDrop() {
     this.cardDrop$.subscribe((event: CardDropEvent) => {
+      if (!this.gameStarted) this.startTimer();
       const originalLocationOfCard = event.card.location;
-      const newLocationOfCard = this.getLocationCardWasDroppedOn(event.card, {
-        clientX: event.clientX,
-        clientY: event.clientY,
-      });
+      const newLocationOfCard = this.getLocationCardWasDroppedOn(event);
 
       if (!newLocationOfCard) return this.moveCardBackToStartingPosition();
-      if (!this.gameStarted) this.startTimer();
       if (!this.moveIsAllowed(event.card, newLocationOfCard)) return this.moveCardBackToStartingPosition();
 
       this.moveCardToNewPosition(event.card, newLocationOfCard);
@@ -111,28 +108,33 @@ export class AppComponent implements OnInit, AfterViewInit {
   moveIsAllowed(cardMoved: PlayingCard, locationOfCardDrop: PlayingCard['location']) {
     if (JSON.stringify(cardMoved.location) === JSON.stringify(locationOfCardDrop)) return false;
 
-    const topCardOfNewLocation = this.getTopCardForType(locationOfCardDrop);
+    const topCardOnNewLocation = this.getTopCardForType(locationOfCardDrop);
 
-    if (locationOfCardDrop.type === 'tableau') {
-      if (!topCardOfNewLocation) {
-        if (cardMoved.value === 'K') return true;
-        return false;
-      }
-      if (AppComponent.cardsAreSameSuitColor(cardMoved.suit, topCardOfNewLocation.suit)) return false;
-      return AppComponent.cardValueIsOneLowerThanNext(cardMoved.value, topCardOfNewLocation.value);
-    }
-
-    if (locationOfCardDrop.type === 'foundation') {
-      if (!topCardOfNewLocation) {
-        if (cardMoved.value === 'A') return true;
-        return false;
-      }
-
-      if (cardMoved.suit !== topCardOfNewLocation.suit) return false;
-      return AppComponent.cardValueIsOneGreaterThanNext(cardMoved.value, topCardOfNewLocation.value);
-    }
+    if (locationOfCardDrop.type === 'tableau')
+      return this.cardIsAllowedToBeMovedToTableau(cardMoved, topCardOnNewLocation);
+    if (locationOfCardDrop.type === 'foundation')
+      return this.cardIsAllowedToBeMovedToFoundation(cardMoved, topCardOnNewLocation);
 
     return false;
+  }
+
+  cardIsAllowedToBeMovedToTableau(cardMoved: PlayingCard, topCardOfNewLocation: PlayingCard | null) {
+    if (!topCardOfNewLocation) {
+      if (cardMoved.value === 'K') return true;
+      return false;
+    }
+    if (AppComponent.cardsAreSameSuitColor(cardMoved.suit, topCardOfNewLocation.suit)) return false;
+    return AppComponent.cardValueIsOneLowerThanNext(cardMoved.value, topCardOfNewLocation.value);
+  }
+
+  cardIsAllowedToBeMovedToFoundation(cardMoved: PlayingCard, topCardOfNewLocation: PlayingCard | null) {
+    if (!topCardOfNewLocation) {
+      if (cardMoved.value === 'A') return true;
+      return false;
+    }
+
+    if (cardMoved.suit !== topCardOfNewLocation.suit) return false;
+    return AppComponent.cardValueIsOneGreaterThanNext(cardMoved.value, topCardOfNewLocation.value);
   }
 
   moveCardBackToStartingPosition() {
@@ -154,14 +156,18 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   watchForCardMove(): void {
     this.cardIsBeingMoved$.subscribe(({ card, translation }) => {
-      const cardsOnTopOfCurrentCard = this.getCardsSittingOnTopOfCurrentCard(card);
-      if (cardsOnTopOfCurrentCard.length) {
-        this.additionalCardsToMove$.next({
-          additionalCardsToMove: cardsOnTopOfCurrentCard,
-          translation,
-        });
-      }
+      this.animateAdditionalCardsIfRequired(card, translation);
     });
+  }
+
+  animateAdditionalCardsIfRequired(card: PlayingCard, translation: string) {
+    const cardsOnTopOfCurrentCard = this.getCardsSittingOnTopOfCurrentCard(card);
+    if (cardsOnTopOfCurrentCard.length) {
+      this.additionalCardsToMove$.next({
+        additionalCardsToMove: cardsOnTopOfCurrentCard,
+        translation,
+      });
+    }
   }
 
   getCardsSittingOnTopOfCurrentCard(currentCard: PlayingCard): PlayingCard[] {
@@ -249,14 +255,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.cards.push(cardToUpdate);
   }
 
-  getLocationCardWasDroppedOn(
-    card: PlayingCard,
-    positionOfCardOnMouseUp: { clientX: number; clientY: number }
-  ): PlayingCard['location'] | false {
+  getLocationCardWasDroppedOn(positionOfCardOnMouseUp: CardDropEvent): PlayingCard['location'] | false {
     const positionOfEachCardPile: {
       location: PlayingCard['location'];
       rect: { top: number; bottom: number; left: number; right: number };
-    }[] = this.getBoundingClientRectForEachCardPileExpect(card.location);
+    }[] = this.getBoundingClientRectForEachCardPile();
     let locationCardWasDroppedOn;
 
     positionOfEachCardPile.forEach(cardToCheck => {
@@ -273,19 +276,13 @@ export class AppComponent implements OnInit, AfterViewInit {
     return locationCardWasDroppedOn ? locationCardWasDroppedOn : false;
   }
 
-  getBoundingClientRectForEachCardPileExpect(cardPileToExclude: PlayingCard['location']) {
+  getBoundingClientRectForEachCardPile() {
     const boundingClientRectForEachPile: {
       location: PlayingCard['location'];
       rect: { top: number; bottom: number; left: number; right: number };
     }[] = [];
     const allPossibleCardPileLocations = [...cardPileTypes];
     const relevantCardPileDOMElements = [...this.cardPileElements];
-    const indexOfCardPileToIgnore = allPossibleCardPileLocations.findIndex(
-      cardPile => JSON.stringify(cardPile) === JSON.stringify(cardPileToExclude)
-    );
-
-    allPossibleCardPileLocations.splice(indexOfCardPileToIgnore, 1);
-    relevantCardPileDOMElements.splice(indexOfCardPileToIgnore, 1);
 
     relevantCardPileDOMElements.forEach((cardPile, index) => {
       const positionsOfEachCardInGivenPile: DOMRect[] = [];
