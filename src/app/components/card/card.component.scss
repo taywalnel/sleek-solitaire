@@ -20,7 +20,7 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    font-family: "Lato", sans-serif;
+    font-family: 'Lato', sans-serif;
     padding: 10%;
     box-sizing: border-box;
     font-size: 1rem;
@@ -78,4 +78,16 @@
 img {
   height: 100%;
   pointer-events: none;
+}
+
+@media only screen and (max-width: 500px) {
+  .card-content {
+    font-size: 0.8rem !important;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .card-content {
+    font-size: 0.7rem !important;
+  }
 }

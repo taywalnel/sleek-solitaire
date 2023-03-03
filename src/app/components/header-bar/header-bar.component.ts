@@ -1,12 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { fromEvent } from 'rxjs';
 import { AppComponent } from 'src/app/app.component';
 
@@ -19,7 +11,7 @@ export interface Settings {
   templateUrl: './header-bar.component.html',
   styleUrls: ['./header-bar.component.scss'],
 })
-export class HeaderBarComponent implements AfterViewInit {
+export class HeaderBarComponent {
   @Input() totalMoves = 0;
   @Input() elapsedTimeInSeconds = 0;
   @Output() resetGameEvent = new EventEmitter<null>();
@@ -33,15 +25,6 @@ export class HeaderBarComponent implements AfterViewInit {
   nightModeActive = false;
 
   constructor(private app: AppComponent) {}
-
-  @ViewChild('resetGameButton') resetGameButton: ElementRef;
-
-  ngAfterViewInit() {
-    fromEvent(this.resetGameButton.nativeElement, 'click').subscribe(() => {
-      this.rotationCount = this.rotationCount - 180;
-      this.rotateImageStyling = `rotate(${this.rotationCount}deg)`;
-    });
-  }
 
   settingsClickHandler() {
     this.showSettingsMenu = !this.showSettingsMenu;

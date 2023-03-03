@@ -27,7 +27,7 @@
     flex: 1;
     position: relative;
     width: 50%;
-    min-width: 800px;
+    min-width: 760px;
     height: 100%;
   }
 
@@ -35,7 +35,7 @@
     position: absolute;
     width: 100%;
 
-    padding: 40px;
+    padding-top: 40px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -73,5 +73,12 @@
     right: 0;
     padding: 0 10px 0 0;
     font-size: 12px;
+  }
+}
+
+@media only screen and (max-height: 500px) {
+  .game-board-container {
+    padding-top: 20px !important;
+    gap: 20px !important;
   }
 }

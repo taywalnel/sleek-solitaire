@@ -2,15 +2,13 @@
   <app-header-bar
     [totalMoves]="totalMoves"
     [elapsedTimeInSeconds]="elapsedTimeInSeconds"
-    (resetGameEvent)="resetGame()"
-  ></app-header-bar>
+    (resetGameEvent)="resetGame()"></app-header-bar>
   <app-game-won-modal
     [totalMoves]="totalMoves"
     [elapsedTimeInSeconds]="elapsedTimeInSeconds"
     [class.show]="showGameWonModal"
-    (modalEventEmitter)="gameWonModalEventHandler($event)"
-  ></app-game-won-modal>
-  <div class="square">
+    (modalEventEmitter)="gameWonModalEventHandler($event)"></app-game-won-modal>
+  <div class="square" [style.min-width]="widthOfGameBoard$ | async">
     <div class="game-board-container">
       <div class="row stock-and-foundation">
         <div class="column">
@@ -18,77 +16,52 @@
             [cards]="filterCardsByLocation({ type: 'stock', index: 1 })"
             type="stock"
             [index]="1"
-            placeHolderImageSrc="assets/images/refresh.svg"
-          ></app-card-pile>
+            placeHolderImageSrc="assets/images/refresh.svg"></app-card-pile>
         </div>
         <div class="column">
           <app-card-pile
             [cards]="filterCardsByLocation({ type: 'waste', index: 1 })"
             type="waste"
-            [index]="1"
-          ></app-card-pile>
+            [index]="1"></app-card-pile>
         </div>
         <div class="column"></div>
         <div class="column">
           <app-card-pile
             [cards]="filterCardsByLocation({ type: 'foundation', index: 1 })"
             type="foundation"
-            [index]="1"
-          ></app-card-pile>
+            [index]="1"></app-card-pile>
         </div>
         <div class="column">
           <app-card-pile
             [cards]="filterCardsByLocation({ type: 'foundation', index: 2 })"
             type="foundation"
-            [index]="1"
-          ></app-card-pile>
+            [index]="1"></app-card-pile>
         </div>
         <div class="column">
           <app-card-pile
             [cards]="filterCardsByLocation({ type: 'foundation', index: 3 })"
             type="foundation"
-            [index]="1"
-          ></app-card-pile>
+            [index]="1"></app-card-pile>
         </div>
         <div class="column">
           <app-card-pile
             [cards]="filterCardsByLocation({ type: 'foundation', index: 4 })"
             type="foundation"
-            [index]="1"
-          ></app-card-pile>
+            [index]="1"></app-card-pile>
         </div>
       </div>
       <div #tableau class="row tableau">
-        <app-card-pile
-          [cards]="filterCardsByLocation({ type: 'tableau', index: 1 })"
-        ></app-card-pile>
-        <app-card-pile
-          [cards]="filterCardsByLocation({ type: 'tableau', index: 2 })"
-        ></app-card-pile>
-        <app-card-pile
-          [cards]="filterCardsByLocation({ type: 'tableau', index: 3 })"
-        ></app-card-pile>
-        <app-card-pile
-          [cards]="filterCardsByLocation({ type: 'tableau', index: 4 })"
-        ></app-card-pile>
-        <app-card-pile
-          [cards]="filterCardsByLocation({ type: 'tableau', index: 5 })"
-        ></app-card-pile>
-        <app-card-pile
-          [cards]="filterCardsByLocation({ type: 'tableau', index: 6 })"
-        ></app-card-pile>
-        <app-card-pile
-          [cards]="filterCardsByLocation({ type: 'tableau', index: 7 })"
-        ></app-card-pile>
+        <app-card-pile [cards]="filterCardsByLocation({ type: 'tableau', index: 1 })"></app-card-pile>
+        <app-card-pile [cards]="filterCardsByLocation({ type: 'tableau', index: 2 })"></app-card-pile>
+        <app-card-pile [cards]="filterCardsByLocation({ type: 'tableau', index: 3 })"></app-card-pile>
+        <app-card-pile [cards]="filterCardsByLocation({ type: 'tableau', index: 4 })"></app-card-pile>
+        <app-card-pile [cards]="filterCardsByLocation({ type: 'tableau', index: 5 })"></app-card-pile>
+        <app-card-pile [cards]="filterCardsByLocation({ type: 'tableau', index: 6 })"></app-card-pile>
+        <app-card-pile [cards]="filterCardsByLocation({ type: 'tableau', index: 7 })"></app-card-pile>
       </div>
     </div>
   </div>
   <div class="footer">
-    <span
-      >Developed by
-      <a href="https://www.linkedin.com/in/taylor-w-nelson/" target="_blank"
-        >Taylor Nelson</a
-      ></span
-    >
+    <span>Developed by <a href="https://www.linkedin.com/in/taylor-w-nelson/" target="_blank">Taylor Nelson</a></span>
   </div>
 </div>

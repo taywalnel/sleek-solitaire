@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
-import { interval, Subject, Subscription } from 'rxjs';
+import { debounceTime, filter, fromEvent, interval, Observable, of, Subject, Subscription, switchMap } from 'rxjs';
 import { Settings } from './components/header-bar/header-bar.component';
 import { cardPileTypes } from './constants/card-pile-types';
 import { deckOfCards } from './constants/deck-of-cards';
@@ -46,6 +46,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   cardIsBeingMoved$ = new Subject<CardMovingEvent>();
   additionalCardsToMove$ = new Subject<AdditionalCardsToMoveEvent>();
   stockClicked$ = new Subject<boolean>();
+  widthOfGameBoard$ = new Subject<string>();
   intervalSubsription: Subscription;
   cardPileElements: Element[];
   totalMoves = 0;
@@ -54,6 +55,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   settings$ = new Subject<Settings>();
   nightMode = false;
   showGameWonModal = false;
+  widthOfGameBoard: Observable<string>;
 
   @ViewChild('tableau') tableauSection: ElementRef;
 
@@ -71,10 +73,27 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.settings$.subscribe(settings => {
       this.nightMode = settings.nightMode;
     });
+
+    const resize = fromEvent(window, 'resize') as Observable<UIEvent>;
+    resize.pipe(debounceTime(250)).subscribe(() => {
+      this.updateWidthOfGameBoard();
+    });
   }
 
   ngAfterViewInit(): void {
     this.cardPileElements = Array.from(document.querySelectorAll('app-card-pile'));
+    this.updateWidthOfGameBoard();
+  }
+
+  updateWidthOfGameBoard() {
+    const screenWidth = window.innerWidth < window.outerWidth ? window.innerWidth : window.outerWidth;
+    const screenHeight = window.innerHeight < window.outerHeight ? window.innerHeight : window.outerHeight;
+    const smallestAxis = screenWidth < screenHeight ? screenWidth : screenHeight;
+    if (smallestAxis > 800) {
+      return this.widthOfGameBoard$.next('760px');
+    } else {
+      return this.widthOfGameBoard$.next(`${smallestAxis - 40}px`);
+    }
   }
 
   watchForCardDrop() {

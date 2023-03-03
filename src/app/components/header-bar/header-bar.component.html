@@ -1,30 +1,29 @@
-<div class="header-bar" [class.show]="showSettingsMenu">
-  <div class="settings-menu">
-    <app-icon imageSrc="../assets/images/night.svg"></app-icon>
-    <mat-slide-toggle (click)="toggleNightMode()"></mat-slide-toggle>
+<div class="header-container" [class.show]="showSettingsMenu">
+  <div class="title-container">
+    <div><span>sleek</span><span class="red-text">solitaire</span><span>.com</span></div>
   </div>
-  <div class="column game-stats">
-    <div class="stat-container">
-      <app-icon imageSrc="../assets/images/moves.svg"></app-icon>
-      {{ formattedTotalMoves }}
+
+  <div class="stats-actions-container">
+    <div class="settings-menu">
+      <app-icon imageSrc="../assets/images/night.svg"></app-icon>
+      <mat-slide-toggle (click)="toggleNightMode()"></mat-slide-toggle>
     </div>
-    <div class="stat-container large-img-wrapper">
-      <app-icon imageSrc="../assets/images/clock.svg"></app-icon>
-      {{ formattedElapsedTime }}
+    <div class="column game-stats">
+      <div class="stat-container">
+        <app-icon imageSrc="../assets/images/moves.svg"></app-icon>
+        {{ formattedTotalMoves }}
+      </div>
+      <div class="stat-container large-img-wrapper">
+        <app-icon imageSrc="../assets/images/clock.svg"></app-icon>
+        {{ formattedElapsedTime }}
+      </div>
     </div>
-  </div>
-  <div class="column game-header">
-    <span>sleek</span><span class="red-text">solitaire</span><span>.com</span>
-  </div>
-  <div class="column game-buttons">
-    <app-button
-      imageSrc="../assets/images/refresh.svg"
-      [useAnimation]="true"
-      (clickEmitter)="resetGame()"
-    ></app-button>
-    <app-button
-      imageSrc="../assets/images/settings2.svg"
-      (clickEmitter)="settingsClickHandler()"
-    ></app-button>
+    <div class="column game-actions">
+      <app-button
+        imageSrc="../assets/images/refresh.svg"
+        [useAnimation]="true"
+        (clickEmitter)="resetGame()"></app-button>
+      <app-button imageSrc="../assets/images/settings2.svg" (clickEmitter)="settingsClickHandler()"></app-button>
+    </div>
   </div>
 </div>
