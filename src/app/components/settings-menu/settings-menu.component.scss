@@ -1,0 +1,48 @@
+:host {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.settings-menu {
+  padding: 10px 20px;
+  box-sizing: border-box;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: right;
+  transition: opacity 0.3s cubic-bezier(0.58, 0.17, 0.34, 0.74);
+  background-color: #33333391;
+  transform: translate(0px, -70px);
+  transition: transform 0.3s cubic-bezier(0.46, 0.03, 0.52, 0.96);
+
+  &.show {
+    opacity: 1 !important;
+    display: flex !important;
+    pointer-events: bounding-box;
+    transform: translate(0px, 70px);
+  }
+
+  .alignment {
+    width: 40px;
+    display: grid;
+    place-items: center;
+  }
+
+  ::ng-deep.mat-slide-toggle.mat-checked:not(.mat-disabled) {
+    .mat-slide-toggle-thumb {
+      background-color: #5a9c56;
+    }
+    .mat-slide-toggle-bar {
+      background-color: #ffffff;
+    }
+  }
+}
+
+@media only screen and (max-width: 650px) {
+  :host {
+    top: 70px !important;
+  }
+}

@@ -3,21 +3,16 @@
 }
 
 .header-container {
-  font-family: 'Fjalla One', sans-serif;
+  position: relative;
   display: grid;
   place-items: center;
+  z-index: 2;
 
-  &.show {
-    .settings-menu {
-      opacity: 1 !important;
-      display: flex !important;
-    }
-  }
+  font-family: 'Fjalla One', sans-serif;
 }
 
 .title-container {
   position: absolute;
-  width: 100%;
   height: 70px;
   display: grid;
   place-items: center;
@@ -45,28 +40,6 @@
   font-size: 1rem;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 
-  .settings-menu {
-    position: absolute;
-    display: none;
-    padding: 20px;
-    right: 0;
-    top: 70px;
-    z-index: 10;
-    gap: 20px;
-    align-items: center;
-    transition: opacity 0.3s cubic-bezier(0.58, 0.17, 0.34, 0.74);
-    opacity: 0;
-
-    ::ng-deep.mat-slide-toggle.mat-checked:not(.mat-disabled) {
-      .mat-slide-toggle-thumb {
-        background-color: #5a9c56;
-      }
-      .mat-slide-toggle-bar {
-        background-color: #ffffff;
-      }
-    }
-  }
-
   .game-stats {
     align-items: center;
     gap: 5px;
@@ -93,10 +66,11 @@
   .title-container {
     position: relative;
     background-color: #333;
+    width: 100%;
   }
 
   .stats-actions-container {
-    background-color: #3333337d;
+    background-color: #486846;
   }
 
   .settings-menu {
@@ -106,7 +80,8 @@
 
 @media only screen and (max-width: 750px) {
   .game-actions,
-  .game-stats {
+  .game-stats,
+  app-settings-menu::ng-deep.settings-menu {
     gap: 10px !important;
   }
 

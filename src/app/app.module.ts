@@ -11,6 +11,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GameWonModalComponent } from './components/game-won-modal/game-won-modal.component';
 import { IconComponent } from './components/icon/icon.component';
 import { ButtonComponent } from './components/button/button.component';
+import { SettingsMenuComponent } from './components/settings-menu/settings-menu.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { ButtonComponent } from './components/button/button.component';
     HeaderBarComponent,
     GameWonModalComponent,
     IconComponent,
-    ButtonComponent
+    ButtonComponent,
+    SettingsMenuComponent
   ],
   imports: [
     BrowserModule,

@@ -2,12 +2,7 @@
   <div class="title-container">
     <div><span>sleek</span><span class="red-text">solitaire</span><span>.com</span></div>
   </div>
-
   <div class="stats-actions-container">
-    <div class="settings-menu">
-      <app-icon imageSrc="../assets/images/night.svg"></app-icon>
-      <mat-slide-toggle (click)="toggleNightMode()"></mat-slide-toggle>
-    </div>
     <div class="column game-stats">
       <div class="stat-container">
         <app-icon imageSrc="../assets/images/moves.svg"></app-icon>
@@ -27,3 +22,4 @@
     </div>
   </div>
 </div>
+<app-settings-menu [isOpen]="settings.settingsMenu"></app-settings-menu>
