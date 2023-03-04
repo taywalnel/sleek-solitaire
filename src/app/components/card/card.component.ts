@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { filter, fromEvent, map, merge, Observable, switchMap, takeUntil, tap, throttleTime } from 'rxjs';
+import { filter, fromEvent, map, merge, Observable, of, switchMap, takeUntil, tap, throttleTime } from 'rxjs';
 import { AppComponent, PlayingCard } from '../../app.component';
 
 const CARD_RESET_TRANSITION_TIME = 300;
@@ -26,6 +26,12 @@ export class CardComponent implements AfterViewInit, OnInit {
   mouseDown$: Observable<MouseEvent>;
   mouseUp$: Observable<MouseEvent>;
   mouseUpOnDocument$: Observable<MouseEvent>;
+
+  touchDown$: Observable<TouchEvent>;
+  touchMove$: Observable<TouchEvent>;
+  touchUp$: Observable<TouchEvent>;
+  touchUpOnDocument$: Observable<TouchEvent>;
+
   cardMove$: Observable<string>;
   translateCard$: Observable<string>;
 
@@ -37,6 +43,10 @@ export class CardComponent implements AfterViewInit, OnInit {
     if (this.isLastInPile) return true;
     if (this.card.location.type === 'tableau') return true;
     return false;
+  }
+
+  get topElementStyling() {
+    return this.useTop ? this.stackingIndex * 25 + '%' : '0px';
   }
 
   ngOnInit() {
@@ -62,26 +72,43 @@ export class CardComponent implements AfterViewInit, OnInit {
     this.mouseUp$ = fromEvent<MouseEvent>(this.cardElement.nativeElement, 'mouseup');
     this.mouseUpOnDocument$ = fromEvent<MouseEvent>(document, 'mouseup');
 
-    this.mouseUpOnDocument$.subscribe(() => {
+    this.touchDown$ = fromEvent<TouchEvent>(this.cardElement.nativeElement, 'touchstart');
+    this.touchMove$ = fromEvent<TouchEvent>(document, 'touchmove');
+    this.touchUp$ = fromEvent<TouchEvent>(this.cardElement.nativeElement, 'touchend');
+    this.touchUpOnDocument$ = fromEvent<TouchEvent>(document, 'touchend');
+
+    merge(this.mouseUpOnDocument$, this.touchUpOnDocument$).subscribe(() => {
       setTimeout(() => {
         this.zIndex = 'unset';
       }, CARD_RESET_TRANSITION_TIME);
     });
 
-    this.cardMove$ = this.mouseDown$.pipe(
+    this.cardMove$ = merge(
+      this.mouseDown$.pipe(switchMap(event => of({ clientX: event.clientX, clientY: event.clientY }))),
+      this.touchDown$.pipe(
+        switchMap(event => of({ clientX: event.changedTouches[0].clientX, clientY: event.changedTouches[0].clientY }))
+      )
+    ).pipe(
       switchMap(start => {
-        return this.mouseMove$.pipe(
+        return merge(
+          this.mouseMove$.pipe(switchMap(event => of({ clientX: event.clientX, clientY: event.clientY }))),
+          this.touchMove$.pipe(
+            switchMap(event =>
+              of({ clientX: event.changedTouches[0].clientX, clientY: event.changedTouches[0].clientY })
+            )
+          )
+        ).pipe(
           filter(() => this.isLastInPile || this.card.isFacingUp),
           throttleTime(5),
           map(move => {
             const translation = `translate(${move.clientX - start.clientX}px, ${move.clientY - start.clientY}px)`;
-            move.preventDefault();
+            // move.preventDefault();
             this.userIsMovingCard = true;
             this.zIndex = '100';
             this.app.cardIsBeingMoved$.next({ card: this.card, translation });
             return translation;
           }),
-          takeUntil(this.mouseUp$)
+          takeUntil(merge(this.mouseUp$, this.touchUp$))
         );
       })
     );
@@ -98,7 +125,12 @@ export class CardComponent implements AfterViewInit, OnInit {
   }
 
   watchForCardDrop() {
-    this.mouseUp$.subscribe(event => {
+    merge(
+      this.mouseUp$.pipe(switchMap(event => of({ clientX: event.clientX, clientY: event.clientY }))),
+      this.touchUp$.pipe(
+        switchMap(event => of({ clientX: event.changedTouches[0].clientX, clientY: event.changedTouches[0].clientY }))
+      )
+    ).subscribe(event => {
       this.userIsMovingCard = false;
       setTimeout(() => {
         this.zIndex = 'unset';
