@@ -15,6 +15,13 @@ export interface PlayingCard {
   isFacingUp: boolean;
 }
 
+export interface ElementBoundary {
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+}
+
 export interface CardMovingEvent {
   card: PlayingCard;
   translation: string;
@@ -269,33 +276,37 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   getLocationCardWasDroppedOn(positionOfCardOnMouseUp: CardDropEvent): PlayingCard['location'] | false {
-    const positionOfEachCardPile: {
+    const elementBoundaryForEachCardPileLocation: {
       location: PlayingCard['location'];
-      rect: { top: number; bottom: number; left: number; right: number };
-    }[] = this.getBoundingClientRectForEachCardPile();
+      rect: ElementBoundary;
+    }[] = this.getBoundingClientRectForEachCardPileExpect(positionOfCardOnMouseUp.card.location);
     let locationCardWasDroppedOn;
 
-    positionOfEachCardPile.forEach(cardToCheck => {
+    elementBoundaryForEachCardPileLocation.forEach(cardPile => {
       const cardInSectionHorizontally =
-        positionOfCardOnMouseUp.clientX > cardToCheck.rect.left &&
-        positionOfCardOnMouseUp.clientX < cardToCheck.rect.right;
+        positionOfCardOnMouseUp.clientX > cardPile.rect.left && positionOfCardOnMouseUp.clientX < cardPile.rect.right;
       const cardInSectionVertically =
-        positionOfCardOnMouseUp.clientY > cardToCheck.rect.top &&
-        positionOfCardOnMouseUp.clientY < cardToCheck.rect.bottom;
+        positionOfCardOnMouseUp.clientY > cardPile.rect.top && positionOfCardOnMouseUp.clientY < cardPile.rect.bottom;
       if (cardInSectionHorizontally && cardInSectionVertically) {
-        locationCardWasDroppedOn = cardToCheck.location;
+        locationCardWasDroppedOn = cardPile.location;
       }
     });
     return locationCardWasDroppedOn ? locationCardWasDroppedOn : false;
   }
 
-  getBoundingClientRectForEachCardPile() {
-    const boundingClientRectForEachPile: {
+  getBoundingClientRectForEachCardPileExpect(cardPileToOmit: PlayingCard['location']) {
+    const domRectForEachCardPile: {
       location: PlayingCard['location'];
-      rect: { top: number; bottom: number; left: number; right: number };
+      rect: ElementBoundary;
     }[] = [];
-    const allPossibleCardPileLocations = [...cardPileTypes];
+
+    const indexToOmit = cardPileTypes.findIndex(
+      cardPile => JSON.stringify(cardPile) === JSON.stringify(cardPileToOmit)
+    );
+    const relevantCardPileTypes = [...cardPileTypes];
     const relevantCardPileDOMElements = [...this.cardPileElements];
+    relevantCardPileTypes.splice(indexToOmit, 1);
+    relevantCardPileDOMElements.splice(indexToOmit, 1);
 
     relevantCardPileDOMElements.forEach((cardPile, index) => {
       const positionsOfEachCardInGivenPile: DOMRect[] = [];
@@ -307,8 +318,8 @@ export class AppComponent implements OnInit, AfterViewInit {
           positionsOfEachCardInGivenPile.push(card.getBoundingClientRect());
         }
       });
-      boundingClientRectForEachPile.push({
-        location: allPossibleCardPileLocations[index],
+      domRectForEachCardPile.push({
+        location: relevantCardPileTypes[index],
         rect: {
           top: Math.min(...positionsOfEachCardInGivenPile.map(element => element.top)),
           bottom: Math.max(...positionsOfEachCardInGivenPile.map(element => element.bottom)),
@@ -317,7 +328,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         },
       });
     });
-    return boundingClientRectForEachPile;
+    return domRectForEachCardPile;
   }
 
   startGame() {
