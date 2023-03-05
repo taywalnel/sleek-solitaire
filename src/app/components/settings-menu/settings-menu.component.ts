@@ -33,8 +33,4 @@ export class SettingsMenuComponent implements OnInit {
     this.settings.settingsModalOpen = false;
     this.app.settings$.next(this.settings);
   }
-
-  thing() {
-    debugger;
-  }
 }
