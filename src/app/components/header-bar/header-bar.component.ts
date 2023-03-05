@@ -1,11 +1,6 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AppComponent } from 'src/app/app.component';
-
-export interface Settings {
-  nightMode: boolean;
-  settingsMenu: boolean;
-}
-
+import { Settings } from '../settings-menu/settings-menu.component';
 @Component({
   selector: 'app-header-bar',
   templateUrl: './header-bar.component.html',
@@ -15,14 +10,11 @@ export class HeaderBarComponent implements OnInit {
   @Input() totalMoves = 0;
   @Input() elapsedTimeInSeconds = 0;
   @Output() resetGameEvent = new EventEmitter<null>();
+  @Output() undoMoveEvent = new EventEmitter<null>();
 
   rotateImageStyling: string = '';
-  rotationCount = 0;
   showSettingsMenu = false;
-  settings: Settings = {
-    nightMode: false,
-    settingsMenu: false,
-  };
+  settings = new Settings();
 
   constructor(private app: AppComponent) {}
 
@@ -31,7 +23,7 @@ export class HeaderBarComponent implements OnInit {
   }
 
   settingsClickHandler() {
-    this.settings.settingsMenu = !this.settings.settingsMenu;
+    this.settings.settingsModalOpen = !this.settings.settingsModalOpen;
     this.app.settings$.next(this.settings);
   }
 
@@ -45,9 +37,5 @@ export class HeaderBarComponent implements OnInit {
     const minutesString = minutes >= 10 ? `${minutes}` : `0${minutes}`;
     const secondsString = seconds >= 10 ? `${seconds}` : `0${seconds}`;
     return `${minutesString}:${secondsString}`;
-  }
-
-  resetGame() {
-    this.resetGameEvent.emit();
   }
 }

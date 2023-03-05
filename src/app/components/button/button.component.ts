@@ -1,13 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { fromEvent } from 'rxjs';
 
 @Component({
@@ -17,10 +8,12 @@ import { fromEvent } from 'rxjs';
 })
 export class ButtonComponent implements AfterViewInit {
   @Input() imageSrc: string;
+  @Input() imageRotation = 0;
   @Input() useAnimation = false;
+  @Input() invertColors = false;
   @Output() clickEmitter = new EventEmitter();
 
-  rotateImageStyling: string = '';
+  rotateElementStyling: string = '';
   rotationCount = 0;
 
   @ViewChild('button') button: ElementRef;
@@ -30,8 +23,8 @@ export class ButtonComponent implements AfterViewInit {
   ngAfterViewInit() {
     if (this.useAnimation) {
       fromEvent(this.button.nativeElement, 'click').subscribe(() => {
-        this.rotationCount = this.rotationCount - 180;
-        this.rotateImageStyling = `rotate(${this.rotationCount}deg)`;
+        this.rotationCount = this.rotationCount + 360;
+        this.rotateElementStyling = `rotate(${this.rotationCount}deg)`;
       });
     }
   }

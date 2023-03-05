@@ -1,4 +1,17 @@
-<div class="settings-menu" [class.show]="isOpen">
-  <app-icon imageSrc="../assets/images/night.svg"></app-icon>
-  <mat-slide-toggle class="alignment" (click)="toggleNightMode()"></mat-slide-toggle>
+<div class="settings-wrapper" [class.show]="settings.settingsModalOpen">
+  <div class="settings-modal" [class.night-mode]="(app.settings$ | async)?.nightModeActive">
+    <div class="settings-item">
+      <div class="label-icon">
+        <app-icon
+          imageSrc="assets/images/night.svg"
+          [invertColors]="!!!(app.settings$ | async)?.nightModeActive"></app-icon>
+        <span>Night mode</span>
+      </div>
+      <mat-slide-toggle (click)="toggleNightMode()"></mat-slide-toggle>
+    </div>
+    <app-button
+      imageSrc="assets/images/close.svg"
+      [invertColors]="!!!(app.settings$ | async)?.nightModeActive"
+      (clickEmitter)="closeSettings()"></app-button>
+  </div>
 </div>

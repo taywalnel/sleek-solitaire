@@ -1,11 +1,11 @@
-<div class="header-container" [class.show]="showSettingsMenu">
+<div class="header-container">
   <div class="title-container">
     <div><span>sleek</span><span class="red-text">solitaire</span><span>.com</span></div>
   </div>
   <div class="stats-actions-container">
     <div class="column game-stats">
       <div class="stat-container">
-        <app-icon imageSrc="../assets/images/moves.svg"></app-icon>
+        <app-icon imageSrc="../assets/images/flat-arrow.svg"></app-icon>
         {{ formattedTotalMoves }}
       </div>
       <div class="stat-container large-img-wrapper">
@@ -15,11 +15,14 @@
     </div>
     <div class="column game-actions">
       <app-button
-        imageSrc="../assets/images/refresh.svg"
+        imageSrc="../assets/images/flat-arrow.svg"
+        [imageRotation]="180"
+        (clickEmitter)="undoMoveEvent.emit()"></app-button>
+      <app-button
+        imageSrc="../assets/images/reset.svg"
         [useAnimation]="true"
-        (clickEmitter)="resetGame()"></app-button>
-      <app-button imageSrc="../assets/images/settings2.svg" (clickEmitter)="settingsClickHandler()"></app-button>
+        (clickEmitter)="resetGameEvent.emit()"></app-button>
+      <app-button imageSrc="../assets/images/settings.svg" (clickEmitter)="settingsClickHandler()"></app-button>
     </div>
   </div>
 </div>
-<app-settings-menu [isOpen]="settings.settingsMenu"></app-settings-menu>

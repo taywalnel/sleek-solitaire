@@ -1,6 +1,14 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AppComponent } from 'src/app/app.component';
-import { Settings } from '../header-bar/header-bar.component';
+export class Settings {
+  nightModeActive: boolean;
+  settingsModalOpen: boolean;
+
+  constructor() {
+    this.nightModeActive = false;
+    this.settingsModalOpen = false;
+  }
+}
 
 @Component({
   selector: 'app-settings-menu',
@@ -8,13 +16,7 @@ import { Settings } from '../header-bar/header-bar.component';
   styleUrls: ['./settings-menu.component.scss'],
 })
 export class SettingsMenuComponent implements OnInit {
-  @Input() isOpen: boolean;
-
-  settings: Settings = {
-    nightMode: false,
-    settingsMenu: false,
-  };
-  nightModeActive = false;
+  settings = new Settings();
 
   constructor(public app: AppComponent) {}
 
@@ -23,7 +25,16 @@ export class SettingsMenuComponent implements OnInit {
   }
 
   toggleNightMode() {
-    this.settings.nightMode = !this.settings.nightMode;
+    this.settings.nightModeActive = !this.settings.nightModeActive;
     this.app.settings$.next(this.settings);
+  }
+
+  closeSettings() {
+    this.settings.settingsModalOpen = false;
+    this.app.settings$.next(this.settings);
+  }
+
+  thing() {
+    debugger;
   }
 }

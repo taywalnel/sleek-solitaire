@@ -10,6 +10,14 @@
   display: grid;
   place-items: center;
 
+  &.invert-colors {
+    background-color: #333;
+
+    img {
+      filter: invert(100%) sepia(0%) saturate(16%) hue-rotate(359deg) brightness(103%) contrast(101%);
+    }
+  }
+
   img {
     height: 20px;
   }

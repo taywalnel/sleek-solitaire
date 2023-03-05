@@ -3,7 +3,6 @@
 }
 
 .header-container {
-  position: relative;
   display: grid;
   place-items: center;
   z-index: 2;
@@ -62,6 +61,17 @@
   }
 }
 
+@media only screen and (max-width: 750px) {
+  .game-actions,
+  .game-stats {
+    gap: 10px !important;
+  }
+
+  .title-container {
+    font-size: 1.6rem !important;
+  }
+}
+
 @media only screen and (max-width: 650px) {
   .title-container {
     position: relative;
@@ -78,26 +88,18 @@
   }
 }
 
-@media only screen and (max-width: 750px) {
-  .game-actions,
-  .game-stats,
-  app-settings-menu::ng-deep.settings-menu {
-    gap: 10px !important;
+@media only screen and (max-width: 500px) {
+  .game-actions {
+    position: absolute;
+    bottom: 0;
+    height: 70px;
+    background-color: #333;
+    width: 100vw;
+    justify-content: center !important;
+    z-index: 10;
   }
 
-  .title-container {
-    font-size: 1.6rem !important;
-  }
-}
-
-@media only screen and (max-width: 350px) {
-  .game-stats {
-    app-icon {
-      display: none;
-    }
-
-    .stat-container {
-      width: unset !important;
-    }
+  .stats-actions-container {
+    justify-content: center !important;
   }
 }

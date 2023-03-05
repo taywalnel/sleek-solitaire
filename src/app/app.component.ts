@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
-import { debounceTime, filter, fromEvent, interval, Observable, of, Subject, Subscription, switchMap } from 'rxjs';
-import { Settings } from './components/header-bar/header-bar.component';
+import { BehaviorSubject, debounceTime, fromEvent, interval, Observable, Subject, Subscription } from 'rxjs';
+import { Settings } from './components/settings-menu/settings-menu.component';
 import { cardPileTypes } from './constants/card-pile-types';
 import { deckOfCards } from './constants/deck-of-cards';
 
@@ -52,8 +52,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   totalMoves = 0;
   elapsedTimeInSeconds = 0;
   gameStarted = false;
-  settings$ = new Subject<Settings>();
-  nightMode = false;
+  settings$ = new BehaviorSubject<Settings>(new Settings());
   showGameWonModal = false;
   widthOfGameBoard: Observable<string>;
 
@@ -67,17 +66,10 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.startGame();
-    this.watchForCardDrop();
-    this.watchForDeckClick();
-    this.watchForCardMove();
-    this.settings$.subscribe(settings => {
-      this.nightMode = settings.nightMode;
-    });
-
-    const resize = fromEvent(window, 'resize') as Observable<UIEvent>;
-    resize.pipe(debounceTime(250)).subscribe(() => {
-      this.updateWidthOfGameBoard();
-    });
+    this.listenForCardDrop();
+    this.listenForDeckClick();
+    this.listenForCardMove();
+    this.listenForWindowResize();
   }
 
   ngAfterViewInit(): void {
@@ -85,18 +77,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.updateWidthOfGameBoard();
   }
 
-  updateWidthOfGameBoard() {
-    const screenWidth = window.innerWidth < window.outerWidth ? window.innerWidth : window.outerWidth;
-    const screenHeight = window.innerHeight < window.outerHeight ? window.innerHeight : window.outerHeight;
-    const smallestAxis = screenWidth < screenHeight ? screenWidth : screenHeight;
-    if (smallestAxis > 800) {
-      return this.widthOfGameBoard$.next('760px');
-    } else {
-      return this.widthOfGameBoard$.next(`${smallestAxis - 40}px`);
-    }
-  }
-
-  watchForCardDrop() {
+  listenForCardDrop() {
     this.cardDrop$.subscribe((event: CardDropEvent) => {
       if (!this.gameStarted) this.startTimer();
       const originalLocationOfCard = event.card.location;
@@ -111,11 +92,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
       if (this.gameIsComplete) return this.onGameWin();
     });
-  }
-
-  onGameWin() {
-    this.stopTimer();
-    this.openGameWonModal();
   }
 
   moveCardToNewPosition(card: PlayingCard, newLocationOfCard: PlayingCard['location']) {
@@ -160,7 +136,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.cardReset$.next('translate(0px, 0px)');
   }
 
-  watchForDeckClick() {
+  listenForDeckClick() {
     this.stockClicked$.subscribe(() => {
       if (!this.gameStarted) this.startTimer();
       const cardToMove = this.getTopCardForType({ type: 'stock', index: 1 });
@@ -173,10 +149,28 @@ export class AppComponent implements OnInit, AfterViewInit {
     });
   }
 
-  watchForCardMove(): void {
+  listenForCardMove(): void {
     this.cardIsBeingMoved$.subscribe(({ card, translation }) => {
       this.animateAdditionalCardsIfRequired(card, translation);
     });
+  }
+
+  listenForWindowResize() {
+    const resize = fromEvent(window, 'resize') as Observable<UIEvent>;
+    resize.pipe(debounceTime(250)).subscribe(() => {
+      this.updateWidthOfGameBoard();
+    });
+  }
+
+  updateWidthOfGameBoard() {
+    const screenWidth = window.innerWidth < window.outerWidth ? window.innerWidth : window.outerWidth;
+    const screenHeight = window.innerHeight < window.outerHeight ? window.innerHeight : window.outerHeight;
+    const smallestAxis = screenWidth < screenHeight ? screenWidth : screenHeight;
+    if (smallestAxis > 800) {
+      return this.widthOfGameBoard$.next('760px');
+    } else {
+      return this.widthOfGameBoard$.next(`${smallestAxis - 40}px`);
+    }
   }
 
   animateAdditionalCardsIfRequired(card: PlayingCard, translation: string) {
@@ -332,6 +326,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.setLastCardInEachTableauRowToFaceUp();
   }
 
+  onGameWin() {
+    this.stopTimer();
+    this.showGameWonModal = true;
+  }
+
   resetGame() {
     this.gameStarted = false;
     if (this.intervalSubsription) {
@@ -358,10 +357,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     if (command === 'startNewGame') {
       this.resetGame();
     }
-  }
-
-  openGameWonModal() {
-    this.showGameWonModal = true;
   }
 
   isGameFinished(): boolean {

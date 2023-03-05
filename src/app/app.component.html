@@ -1,4 +1,5 @@
-<div class="root-container" [class.night-mode]="nightMode">
+<div class="root-container" [class.night-mode]="(settings$ | async)?.nightModeActive">
+  <app-settings-menu></app-settings-menu>
   <app-header-bar
     [totalMoves]="totalMoves"
     [elapsedTimeInSeconds]="elapsedTimeInSeconds"
