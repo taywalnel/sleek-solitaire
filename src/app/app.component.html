@@ -3,7 +3,9 @@
   <app-header-bar
     [totalMoves]="totalMoves"
     [elapsedTimeInSeconds]="elapsedTimeInSeconds"
-    (resetGameEvent)="resetGame()"></app-header-bar>
+    (resetGameEvent)="resetGame()"
+    (undoMoveEvent)="undoMove()"></app-header-bar>
+
   <app-game-won-modal
     [totalMoves]="totalMoves"
     [elapsedTimeInSeconds]="elapsedTimeInSeconds"

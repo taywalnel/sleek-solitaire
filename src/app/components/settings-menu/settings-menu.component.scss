@@ -27,6 +27,7 @@
   display: grid;
   place-items: center;
   background-color: #33333300;
+  overflow: hidden;
 
   &.show {
     background-color: #333333d3;
