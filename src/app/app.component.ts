@@ -366,7 +366,14 @@ export class AppComponent implements OnInit, AfterViewInit {
   undoMove(){
     const moveToUndo = this.moveHistory.pop();
     if(!moveToUndo) return;
+    if(moveToUndo.previousLocation.type === 'tableau') this.flipTopCardInLocation(moveToUndo.previousLocation);
     this.updateLocationOfCards(moveToUndo.cards, moveToUndo.previousLocation)
+  }
+
+  flipTopCardInLocation(location: PlayingCard["location"]){
+    const topCard = this.getTopCardForType(location);
+    if(!topCard) return
+    topCard.isFacingUp = false;
   }
 
   startTimer() {
