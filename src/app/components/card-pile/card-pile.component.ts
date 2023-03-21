@@ -5,7 +5,7 @@ import { AppComponent, PlayingCard } from 'src/app/app.component';
 @Component({
   selector: 'app-card-pile',
   templateUrl: './card-pile.component.html',
-  styleUrls: ['./card-pile.component.scss']
+  styleUrls: ['./card-pile.component.scss'],
 })
 export class CardPileComponent implements AfterViewInit {
   @Input() cards: PlayingCard[] = [];
@@ -16,18 +16,18 @@ export class CardPileComponent implements AfterViewInit {
   clickCard$: Observable<MouseEvent>;
   @ViewChild('rowElement') rowElement: ElementRef;
 
-  constructor(private app: AppComponent) { }
+  constructor(private app: AppComponent) {}
 
   ngAfterViewInit(): void {
     this.clickCard$ = fromEvent<MouseEvent>(this.rowElement.nativeElement, 'click');
-    if(this.type === 'stock' && this.index === 1){
-      this.watchForCardClick();
+    if (this.type === 'stock' && this.index === 1) {
+      this.listenForPileClick();
     }
   }
 
-  watchForCardClick(){
-    this.clickCard$.subscribe((event) => {
+  listenForPileClick() {
+    this.clickCard$.subscribe(() => {
       this.app.stockClicked$.next(true);
-    })
+    });
   }
 }

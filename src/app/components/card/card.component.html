@@ -1,7 +1,7 @@
 <div
   #cardElement
-  [style.transform]="translateCard$ | async"
-  [style.top]="topElementStyling"
+  [style.transform]="translationStyling$ | async"
+  [style.top]="topStyling"
   [style.zIndex]="zIndex"
   class="card-container no-select"
   [class.use-transition]="!userIsMovingCard"

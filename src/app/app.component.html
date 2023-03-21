@@ -3,15 +3,16 @@
   <app-header-bar
     [totalMoves]="totalMoves"
     [elapsedTimeInSeconds]="elapsedTimeInSeconds"
+    [moveHistory]="moveHistory"
     (resetGameEvent)="resetGame()"
     (undoMoveEvent)="undoMove()">
   </app-header-bar>
-
   <app-game-won-modal
     [totalMoves]="totalMoves"
     [elapsedTimeInSeconds]="elapsedTimeInSeconds"
-    [class.show]="showGameWonModal"
-    (modalEventEmitter)="gameWonModalEventHandler($event)"></app-game-won-modal>
+    [showModal]="showGameWonModal"
+    (modalEventEmitter)="gameWonModalEventHandler($event)">
+  </app-game-won-modal>
   <div class="square" [style.min-width]="widthOfGameBoard$ | async">
     <div class="game-board-container">
       <div class="row stock-and-foundation">

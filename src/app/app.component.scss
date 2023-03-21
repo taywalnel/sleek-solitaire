@@ -15,13 +15,13 @@
     }
   }
 
-  app-game-won-modal {
-    display: none;
+  // app-game-won-modal {
+  //   display: none;
 
-    &.show {
-      display: grid;
-    }
-  }
+  //   &.show {
+  //     display: grid;
+  //   }
+  // }
 
   .square {
     flex: 1;

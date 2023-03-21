@@ -11,6 +11,7 @@ export class ButtonComponent implements AfterViewInit {
   @Input() imageRotation = 0;
   @Input() useAnimation = false;
   @Input() invertColors = false;
+  @Input() disabled = false;
   @Output() clickEmitter = new EventEmitter();
 
   rotateElementStyling: string = '';

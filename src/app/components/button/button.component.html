@@ -1,4 +1,4 @@
-<button #button (click)="clickHandler()">
+<button #button (click)="clickHandler()" [class.disabled]="disabled">
   <app-icon
     [class.use-animation]="useAnimation"
     [imageSrc]="imageSrc"

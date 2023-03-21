@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { AppComponent } from 'src/app/app.component';
+import { AppComponent, MoveHistory } from 'src/app/app.component';
 import { Settings } from '../settings-menu/settings-menu.component';
 @Component({
   selector: 'app-header-bar',
@@ -9,6 +9,7 @@ import { Settings } from '../settings-menu/settings-menu.component';
 export class HeaderBarComponent implements OnInit {
   @Input() totalMoves = 0;
   @Input() elapsedTimeInSeconds = 0;
+  @Input() moveHistory: MoveHistory[];
   @Output() resetGameEvent = new EventEmitter<null>();
   @Output() undoMoveEvent = new EventEmitter<null>();
 

@@ -1,6 +1,11 @@
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { filter, fromEvent, map, merge, Observable, of, switchMap, takeUntil, tap, throttleTime } from 'rxjs';
+import { delay, filter, fromEvent, map, merge, Observable, of, switchMap, takeUntil, tap, throttleTime } from 'rxjs';
 import { AppComponent, PlayingCard } from '../../app.component';
+
+interface MouseOrTouchEvent {
+  clientX: number;
+  clientY: number;
+}
 
 const CARD_RESET_TRANSITION_TIME = 300;
 
@@ -14,26 +19,21 @@ export class CardComponent implements AfterViewInit, OnInit {
   @Input() stackingIndex: number;
   @Input() isLastInPile: boolean;
 
-  style = '';
   userIsMovingCard = false;
   zIndex = 'unset';
-  startingCardCoOrdinates: { x: number; y: number } | null;
   imageSrc: string;
   isRed: boolean;
   useTop: boolean;
 
-  mouseMove$: Observable<MouseEvent>;
-  mouseDown$: Observable<MouseEvent>;
-  mouseUp$: Observable<MouseEvent>;
-  mouseUpOnDocument$: Observable<MouseEvent>;
+  mouseOrTouchStart$: Observable<MouseOrTouchEvent>;
+  mouseOrTouchMove$: Observable<MouseOrTouchEvent>;
+  mouseOrTouchEnd$: Observable<MouseOrTouchEvent>;
 
-  touchDown$: Observable<TouchEvent>;
-  touchMove$: Observable<TouchEvent>;
-  touchUp$: Observable<TouchEvent>;
+  mouseUpOnDocument$: Observable<MouseEvent>;
   touchUpOnDocument$: Observable<TouchEvent>;
 
   cardMove$: Observable<string>;
-  translateCard$: Observable<string>;
+  translationStyling$: Observable<string>;
 
   @ViewChild('cardElement') cardElement: ElementRef;
 
@@ -45,7 +45,7 @@ export class CardComponent implements AfterViewInit, OnInit {
     return false;
   }
 
-  get topElementStyling() {
+  get topStyling() {
     return this.useTop ? this.stackingIndex * 25 + '%' : '0px';
   }
 
@@ -56,8 +56,9 @@ export class CardComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit() {
-    this.initializeEventObservables();
-    this.watchForCardDrop();
+    this.initializeObservables();
+    this.listenForCardDrop();
+    this.listenForMouseOrTouchEndOnDocument();
   }
 
   public static cardIsAllowedToBeDragged(card: PlayingCard): boolean {
@@ -66,54 +67,53 @@ export class CardComponent implements AfterViewInit, OnInit {
     return false;
   }
 
-  initializeEventObservables() {
-    this.mouseDown$ = fromEvent<MouseEvent>(this.cardElement.nativeElement, 'mousedown');
-    this.mouseMove$ = fromEvent<MouseEvent>(document, 'mousemove');
-    this.mouseUp$ = fromEvent<MouseEvent>(this.cardElement.nativeElement, 'mouseup');
+  initializeObservables() {
     this.mouseUpOnDocument$ = fromEvent<MouseEvent>(document, 'mouseup');
-
-    this.touchDown$ = fromEvent<TouchEvent>(this.cardElement.nativeElement, 'touchstart');
-    this.touchMove$ = fromEvent<TouchEvent>(document, 'touchmove');
-    this.touchUp$ = fromEvent<TouchEvent>(this.cardElement.nativeElement, 'touchend');
     this.touchUpOnDocument$ = fromEvent<TouchEvent>(document, 'touchend');
 
-    merge(this.mouseUpOnDocument$, this.touchUpOnDocument$).subscribe(() => {
-      setTimeout(() => {
-        this.zIndex = 'unset';
-      }, CARD_RESET_TRANSITION_TIME);
-    });
-
-    this.cardMove$ = merge(
-      this.mouseDown$.pipe(switchMap(event => of({ clientX: event.clientX, clientY: event.clientY }))),
-      this.touchDown$.pipe(
+    this.mouseOrTouchStart$ = merge(
+      fromEvent<MouseEvent>(this.cardElement.nativeElement, 'mousedown').pipe(
+        switchMap(event => of({ clientX: event.clientX, clientY: event.clientY }))
+      ),
+      fromEvent<TouchEvent>(this.cardElement.nativeElement, 'touchstart').pipe(
         switchMap(event => of({ clientX: event.changedTouches[0].clientX, clientY: event.changedTouches[0].clientY }))
       )
-    ).pipe(
+    );
+    this.mouseOrTouchMove$ = merge(
+      fromEvent<MouseEvent>(document, 'mousemove').pipe(
+        switchMap(event => of({ clientX: event.clientX, clientY: event.clientY }))
+      ),
+      fromEvent<TouchEvent>(document, 'touchmove').pipe(
+        switchMap(event => of({ clientX: event.changedTouches[0].clientX, clientY: event.changedTouches[0].clientY }))
+      )
+    );
+    this.mouseOrTouchEnd$ = merge(
+      fromEvent<MouseEvent>(this.cardElement.nativeElement, 'mouseup').pipe(
+        switchMap(event => of({ clientX: event.clientX, clientY: event.clientY }))
+      ),
+      fromEvent<TouchEvent>(this.cardElement.nativeElement, 'touchend').pipe(
+        switchMap(event => of({ clientX: event.changedTouches[0].clientX, clientY: event.changedTouches[0].clientY }))
+      )
+    );
+
+    this.cardMove$ = this.mouseOrTouchStart$.pipe(
+      filter(() => this.cardIsAllowedToBeMoved()),
       switchMap(start => {
-        return merge(
-          this.mouseMove$.pipe(switchMap(event => of({ clientX: event.clientX, clientY: event.clientY }))),
-          this.touchMove$.pipe(
-            switchMap(event =>
-              of({ clientX: event.changedTouches[0].clientX, clientY: event.changedTouches[0].clientY })
-            )
-          )
-        ).pipe(
-          filter(() => this.isLastInPile || this.card.isFacingUp),
-          throttleTime(5),
+        return this.mouseOrTouchMove$.pipe(
+          throttleTime(10),
           map(move => {
             const translation = `translate(${move.clientX - start.clientX}px, ${move.clientY - start.clientY}px)`;
-            // move.preventDefault();
             this.userIsMovingCard = true;
             this.zIndex = '100';
             this.app.cardIsBeingMoved$.next({ card: this.card, translation });
             return translation;
           }),
-          takeUntil(merge(this.mouseUp$, this.touchUp$))
+          takeUntil(this.mouseOrTouchEnd$)
         );
       })
     );
 
-    this.translateCard$ = merge(
+    this.translationStyling$ = merge(
       this.cardMove$,
       this.app.cardReset$,
       this.app.additionalCardsToMove$.pipe(
@@ -124,23 +124,31 @@ export class CardComponent implements AfterViewInit, OnInit {
     );
   }
 
-  watchForCardDrop() {
-    merge(
-      this.mouseUp$.pipe(switchMap(event => of({ clientX: event.clientX, clientY: event.clientY }))),
-      this.touchUp$.pipe(
-        switchMap(event => of({ clientX: event.changedTouches[0].clientX, clientY: event.changedTouches[0].clientY }))
+  listenForCardDrop() {
+    this.mouseOrTouchEnd$
+      .pipe(
+        tap(event => {
+          this.userIsMovingCard = false;
+          this.app.cardDrop$.next({ card: this.card, clientX: event.clientX, clientY: event.clientY });
+        }),
+        delay(CARD_RESET_TRANSITION_TIME),
+        tap(() => {
+          this.zIndex = 'unset';
+        })
       )
-    ).subscribe(event => {
-      this.userIsMovingCard = false;
-      setTimeout(() => {
+      .subscribe();
+  }
+
+  listenForMouseOrTouchEndOnDocument() {
+    merge(this.mouseUpOnDocument$, this.touchUpOnDocument$)
+      .pipe(delay(CARD_RESET_TRANSITION_TIME))
+      .subscribe(() => {
         this.zIndex = 'unset';
-      }, CARD_RESET_TRANSITION_TIME);
-      const cardDropEvent: {
-        card: PlayingCard;
-        clientX: number;
-        clientY: number;
-      } = { card: this.card, clientX: event.clientX, clientY: event.clientY };
-      this.app.cardDrop$.next(cardDropEvent);
-    });
+      });
+  }
+
+  cardIsAllowedToBeMoved(): boolean {
+    if (this.card.location.type === 'stock') return false;
+    return this.isLastInPile || this.card.isFacingUp;
   }
 }

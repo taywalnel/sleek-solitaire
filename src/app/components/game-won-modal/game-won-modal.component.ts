@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AppComponent } from 'src/app/app.component';
 
 @Component({
   selector: 'app-game-won-modal',
@@ -8,9 +9,10 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 export class GameWonModalComponent {
   @Input() totalMoves: number;
   @Input() elapsedTimeInSeconds: number;
+  @Input() showModal = false;
 
   @Output() modalEventEmitter = new EventEmitter();
-  constructor() {}
+  constructor(public app: AppComponent) {}
 
   get formattedTotalMoves() {
     return String(this.totalMoves).padStart(4, '0');

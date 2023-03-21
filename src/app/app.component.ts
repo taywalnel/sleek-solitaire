@@ -38,6 +38,11 @@ export interface CardDropEvent {
   clientY: number;
 }
 
+export interface MoveHistory {
+  cardsMoved: PlayingCard[];
+  previousLocation: PlayingCard['location'];
+}
+
 const BLACK_CARDS = ['spades', 'clubs'];
 const RED_CARDS = ['diamonds', 'hearts'];
 
@@ -48,7 +53,7 @@ const RED_CARDS = ['diamonds', 'hearts'];
 })
 export class AppComponent implements OnInit, AfterViewInit {
   cards: PlayingCard[];
-  cardDrop$ = new Subject<any>();
+  cardDrop$ = new Subject<CardDropEvent>();
   cardReset$ = new Subject<string>();
   cardIsBeingMoved$ = new Subject<CardMovingEvent>();
   additionalCardsToMove$ = new Subject<AdditionalCardsToMoveEvent>();
@@ -62,7 +67,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   settings$ = new BehaviorSubject<Settings>(new Settings());
   showGameWonModal = false;
   widthOfGameBoard: Observable<string>;
-  moveHistory: {cards: PlayingCard[], previousLocation: PlayingCard["location"]}[] = [];
+  moveHistory: MoveHistory[] = [];
 
   @ViewChild('tableau') tableauSection: ElementRef;
 
@@ -86,7 +91,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   listenForCardDrop() {
-    this.cardDrop$.subscribe((event: CardDropEvent) => {
+    this.cardDrop$.subscribe(event => {
       if (!this.gameStarted) this.startTimer();
       const originalLocationOfCard = event.card.location;
       const newLocationOfCard = this.getLocationCardWasDroppedOn(event);
@@ -269,17 +274,17 @@ export class AppComponent implements OnInit, AfterViewInit {
     cardsToUpdate.forEach(cardToUpdate => this.updateLocationOfCard(cardToUpdate, newLocation));
   }
 
-  updateMoveHistory(latestMove: PlayingCard[]){
+  updateMoveHistory(latestMove: PlayingCard[]) {
     const previousLocation = Object.assign({}, latestMove[0].location);
     this.moveHistory.push({
-      cards: [...latestMove],
-      previousLocation
+      cardsMoved: [...latestMove],
+      previousLocation,
     });
   }
 
   updateLocationOfCard(movedCard: PlayingCard, newLocation: PlayingCard['location']): void {
     const indexOfCardToUpdate = this.cards.findIndex(card => card === movedCard);
-    if(movedCard.location.type === 'stock' || newLocation.type === 'stock'){
+    if (movedCard.location.type === 'stock' || newLocation.type === 'stock') {
       movedCard.isFacingUp = !movedCard.isFacingUp;
     }
     movedCard.location = newLocation;
@@ -363,16 +368,16 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.startGame();
   }
 
-  undoMove(){
+  undoMove() {
     const moveToUndo = this.moveHistory.pop();
-    if(!moveToUndo) return;
-    if(moveToUndo.previousLocation.type === 'tableau') this.flipTopCardInLocation(moveToUndo.previousLocation);
-    this.updateLocationOfCards(moveToUndo.cards, moveToUndo.previousLocation)
+    if (!moveToUndo) return;
+    if (moveToUndo.previousLocation.type === 'tableau') this.flipTopCardInLocation(moveToUndo.previousLocation);
+    this.updateLocationOfCards(moveToUndo.cardsMoved, moveToUndo.previousLocation);
   }
 
-  flipTopCardInLocation(location: PlayingCard["location"]){
+  flipTopCardInLocation(location: PlayingCard['location']) {
     const topCard = this.getTopCardForType(location);
-    if(!topCard) return
+    if (!topCard) return;
     topCard.isFacingUp = false;
   }
 
@@ -455,7 +460,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     let cardIndex = 0;
     for (let rowIndex = 1; rowIndex <= 7; rowIndex++) {
-      let maxCardsInRow = rowIndex;
+      const maxCardsInRow = rowIndex;
       for (let indexOfCardInRow = 1; indexOfCardInRow <= maxCardsInRow; indexOfCardInRow++) {
         cardsWithStartingPositions.push({
           ...cards[cardIndex],

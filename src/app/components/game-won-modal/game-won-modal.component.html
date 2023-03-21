@@ -1,31 +1,33 @@
-<div class="modal-container">
-  <div class="header">Congratulations</div>
-  <div class="body">
-    <div class="divider">
-      <hr />
-      <span>YOU WON IN:</span>
+<div class="modal-wrapper" [class.show]="showModal">
+  <div class="modal" [class.night-mode]="(app.settings$ | async)?.nightModeActive">
+    <div class="header">Congratulations</div>
+    <div class="body">
+      <div class="divider">
+        <hr />
+        <span>YOU WON IN:</span>
+        <hr />
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <span>MOVES</span>
+          <span class="value">{{ formattedTotalMoves }}</span>
+        </div>
+        <div class="stat">
+          <span>TIME</span>
+          <span class="value">{{ formattedElapsedTime }}</span>
+        </div>
+      </div>
       <hr />
     </div>
-    <div class="stats">
-      <div class="stat">
-        <span>MOVES</span>
-        <span class="value">{{ formattedTotalMoves }}</span>
-      </div>
-      <div class="stat">
-        <span>TIME</span>
-        <span class="value">{{ formattedElapsedTime }}</span>
-      </div>
+    <div class="footer">
+      <app-button
+        imageSrc="../assets/images/close.svg"
+        [invertColors]="!!!(app.settings$ | async)?.nightModeActive"
+        (clickEmitter)="closeHandler()"></app-button>
+      <app-button
+        imageSrc="../assets/images/reset.svg"
+        [invertColors]="!!!(app.settings$ | async)?.nightModeActive"
+        (clickEmitter)="startNewGameHandler()"></app-button>
     </div>
-    <hr />
-  </div>
-  <div class="footer">
-    <app-button
-      imageSrc="../assets/images/close.svg"
-      (clickEmitter)="closeHandler()"
-    ></app-button>
-    <app-button
-      imageSrc="../assets/images/refresh.svg"
-      (clickEmitter)="startNewGameHandler()"
-    ></app-button>
   </div>
 </div>

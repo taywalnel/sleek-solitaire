@@ -17,11 +17,10 @@
       <app-button
         imageSrc="../assets/images/flat-arrow.svg"
         [imageRotation]="180"
-        (clickEmitter)="undoMoveEvent.emit()"></app-button>
-      <app-button
-        imageSrc="../assets/images/reset.svg"
-        [useAnimation]="true"
-        (clickEmitter)="resetGameEvent.emit()"></app-button>
+        (clickEmitter)="undoMoveEvent.emit()"
+        [disabled]="moveHistory.length === 0"></app-button>
+      <app-button imageSrc="../assets/images/reset.svg" [useAnimation]="true" (clickEmitter)="resetGameEvent.emit()">
+      </app-button>
       <app-button imageSrc="../assets/images/settings.svg" (clickEmitter)="settingsClickHandler()"></app-button>
     </div>
   </div>

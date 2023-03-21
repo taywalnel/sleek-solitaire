@@ -31,6 +31,8 @@
 
   &.show {
     background-color: #333333d3;
+    pointer-events: all;
+
     .settings-modal {
       transform: translate(0, 0);
     }
