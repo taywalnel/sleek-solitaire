@@ -15,8 +15,9 @@
   height: 70px;
   display: grid;
   place-items: center;
-  font-size: 2rem;
+  font-size: 1.6rem;
   width: 100%;
+  font-family: 'Montserrat', sans-serif;
 
   span {
     color: #5a9c56;
@@ -59,6 +60,10 @@
     align-items: center;
     display: flex;
     gap: 20px;
+
+    #settings-button {
+      z-index: 100;
+    }
   }
 }
 
@@ -69,7 +74,7 @@
   }
 
   .title-container {
-    font-size: 1.6rem !important;
+    font-size: 1.4rem !important;
   }
 }
 
@@ -78,6 +83,8 @@
     position: relative;
     background-color: #333;
     width: 100%;
+    font-size: 1.2rem !important;
+    height: 50px;
   }
 
   .stats-actions-container {
@@ -86,6 +93,31 @@
 
   .settings-menu {
     top: 140px !important;
+  }
+}
+
+@media only screen and (max-width: 650px) {
+  .title-container {
+    position: relative;
+    background-color: #333;
+    width: 100%;
+    font-size: 1.2rem !important;
+    height: 50px;
+  }
+
+  .stats-actions-container {
+    background-color: #486846;
+  }
+
+  .settings-menu {
+    top: 140px !important;
+  }
+}
+
+@media only screen and (max-height: 500px) {
+  .stats-actions-container,
+  .title-container {
+    height: 55px;
   }
 }
 

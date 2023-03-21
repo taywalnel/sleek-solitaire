@@ -183,7 +183,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     if (smallestAxis > 800) {
       return this.widthOfGameBoard$.next('760px');
     } else {
-      return this.widthOfGameBoard$.next(`${smallestAxis - 40}px`);
+      return this.widthOfGameBoard$.next(`${smallestAxis - 10}px`);
     }
   }
 
