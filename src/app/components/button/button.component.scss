@@ -9,6 +9,10 @@ button {
   &.disabled {
     app-icon::ng-deep .icon-container {
       background-color: rgba(255, 255, 255, 0.317);
+
+      &:hover {
+        outline: unset;
+      }
     }
   }
 
