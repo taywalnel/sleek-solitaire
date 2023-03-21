@@ -16,19 +16,12 @@
     }
   }
 
-  // app-game-won-modal {
-  //   display: none;
-
-  //   &.show {
-  //     display: grid;
-  //   }
-  // }
-
   .square {
     flex: 1;
     position: relative;
     width: 50%;
     min-width: 760px;
+    max-width: 1000px;
     height: 100%;
   }
 
