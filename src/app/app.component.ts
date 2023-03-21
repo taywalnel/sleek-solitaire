@@ -361,6 +361,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   resetGame() {
     this.gameStarted = false;
+    this.moveHistory = [];
     if (this.intervalSubsription) {
       this.stopTimer();
     }
