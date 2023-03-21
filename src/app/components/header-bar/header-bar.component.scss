@@ -18,6 +18,8 @@
   font-size: 1.6rem;
   width: 100%;
   font-family: 'Montserrat', sans-serif;
+  z-index: 1;
+  background-color: #333;
 
   span {
     color: #5a9c56;
@@ -35,7 +37,7 @@
   box-sizing: border-box;
   display: flex;
   justify-content: space-between;
-  background-color: #333;
+  z-index: 2;
 
   color: white;
   font-size: 1rem;
@@ -81,7 +83,6 @@
 @media only screen and (max-width: 650px) {
   .title-container {
     position: relative;
-    background-color: #333;
     width: 100%;
     font-size: 1.2rem !important;
     height: 50px;
@@ -99,7 +100,6 @@
 @media only screen and (max-width: 650px) {
   .title-container {
     position: relative;
-    background-color: #333;
     width: 100%;
     font-size: 1.2rem !important;
     height: 50px;

@@ -9,19 +9,11 @@ button {
   &.disabled {
     app-icon::ng-deep .icon-container {
       background-color: rgba(255, 255, 255, 0.317);
-
-      &:hover {
-        outline: unset;
-      }
     }
   }
 
   app-icon.use-animation {
     transition: transform 0.3s ease-in-out;
-  }
-
-  app-icon::ng-deep .icon-container:hover {
-    outline: 4px solid #657a9c;
   }
 }
 
