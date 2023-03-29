@@ -16,9 +16,4 @@ A fun, easy to play solitaire game. Just drag a card to start the game!
 - If you get stuck simply hit the restart button to start a new game
 
 ## Developer notes
-To build a local version of this project: 
-- Install the dependencies: `npm install`
-- Build the app: `ng-serve`
-
-
 - This project was built using Angular v15.1.4
