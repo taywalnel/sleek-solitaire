@@ -20,4 +20,5 @@ To build a local version of this project:
 - Install the dependencies: `npm install`
 - Build the app: `ng-serve`
 
+
 - This project was built using Angular v15.1.4
