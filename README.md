@@ -2,6 +2,14 @@
 
 A fun, easy to play solitaire game. Just drag a card to start the game!
 
+## Features
+- Night mode setting
+- Undo move functionality
+- Restart game functionality
+- Total moves counter
+- Total time elapsed counter
+- Reponsive
+
 # Angular notes
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.2.2.
