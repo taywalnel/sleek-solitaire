@@ -66,7 +66,6 @@ export class AppComponent implements OnInit, AfterViewInit {
   gameStarted = false;
   settings$ = new BehaviorSubject<Settings>(new Settings());
   showGameWonModal = false;
-  widthOfGameBoard: Observable<string>;
   moveHistory: MoveHistory[] = [];
 
   @ViewChild('tableau') tableauSection: ElementRef;
@@ -83,11 +82,11 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.listenForDeckClick();
     this.listenForCardMove();
     this.listenForWindowResize();
+    this.updateWidthOfGameBoard();
   }
 
   ngAfterViewInit(): void {
     this.cardPileElements = Array.from(document.querySelectorAll('app-card-pile'));
-    this.updateWidthOfGameBoard();
   }
 
   listenForCardDrop() {
