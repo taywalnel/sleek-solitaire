@@ -17,4 +17,6 @@ A fun, easy to play solitaire game. Just drag a card to start the game!
 
 ## Developer notes
 - This project was built using Angular v15.1.4
-- To build a local version of this project: `ng-serve`
+To build a local version of this project: 
+- Install the dependencies: `npm install`
+- Build the app: `ng-serve`
