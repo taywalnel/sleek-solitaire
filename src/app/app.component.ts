@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
-import { BehaviorSubject, debounceTime, fromEvent, interval, Observable, Subject, Subscription } from 'rxjs';
+import { AfterContentChecked, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { BehaviorSubject, Observable, Subject, Subscription, debounceTime, fromEvent, interval } from 'rxjs';
 import { Settings } from './components/settings-menu/settings-menu.component';
 import { cardPileTypes } from './constants/card-pile-types';
 import { deckOfCards } from './constants/deck-of-cards';
@@ -51,7 +51,7 @@ const RED_CARDS = ['diamonds', 'hearts'];
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit, AfterContentChecked {
   cards: PlayingCard[];
   cardDrop$ = new Subject<CardDropEvent>();
   cardReset$ = new Subject<string>();
@@ -82,11 +82,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.listenForDeckClick();
     this.listenForCardMove();
     this.listenForWindowResize();
-    this.updateWidthOfGameBoard();
+
   }
 
-  ngAfterViewInit(): void {
+  ngAfterContentChecked(): void {
     this.cardPileElements = Array.from(document.querySelectorAll('app-card-pile'));
+    this.updateWidthOfGameBoard();
   }
 
   listenForCardDrop() {
