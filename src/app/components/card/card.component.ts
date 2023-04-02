@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { delay, filter, fromEvent, map, merge, Observable, of, switchMap, takeUntil, tap, throttleTime } from 'rxjs';
+import { Observable, delay, filter, fromEvent, map, merge, of, switchMap, takeUntil, tap, throttleTime } from 'rxjs';
 import { AppComponent, PlayingCard } from '../../app.component';
 
 interface MouseOrTouchEvent {
@@ -24,6 +24,7 @@ export class CardComponent implements AfterViewInit, OnInit {
   imageSrc: string;
   isRed: boolean;
   useTop: boolean;
+  imagesLoaded = false;
 
   mouseOrTouchStart$: Observable<MouseOrTouchEvent>;
   mouseOrTouchMove$: Observable<MouseOrTouchEvent>;
@@ -38,6 +39,10 @@ export class CardComponent implements AfterViewInit, OnInit {
   @ViewChild('cardElement') cardElement: ElementRef;
 
   constructor(private app: AppComponent) {}
+
+  get showCard(){
+    return this.imagesLoaded || !this.card.isFacingUp;
+  }
 
   get useBoxShadow() {
     if (this.isLastInPile) return true;
@@ -151,4 +156,8 @@ export class CardComponent implements AfterViewInit, OnInit {
     if (this.card.location.type === 'stock') return false;
     return this.isLastInPile || this.card.isFacingUp;
   }
+
+  imagesLoadedHandler(){
+    this.imagesLoaded = true;
+  };
 }
