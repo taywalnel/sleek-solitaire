@@ -40,7 +40,7 @@ export class CardComponent implements AfterViewInit, OnInit {
 
   constructor(private app: AppComponent) {}
 
-  get showCard(){
+  get showCard() {
     return this.imagesLoaded || !this.card.isFacingUp;
   }
 
@@ -107,7 +107,9 @@ export class CardComponent implements AfterViewInit, OnInit {
         return this.mouseOrTouchMove$.pipe(
           throttleTime(10),
           map(move => {
-            const translation = `translate(${move.clientX - start.clientX}px, ${move.clientY - start.clientY}px)`;
+            const translation = `translate(${move.clientX - start.clientX}px, ${
+              move.clientY - start.clientY
+            }px) scale(1.2)`;
             this.userIsMovingCard = true;
             this.zIndex = '100';
             this.app.cardIsBeingMoved$.next({ card: this.card, translation });

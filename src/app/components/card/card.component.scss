@@ -2,15 +2,14 @@
   position: absolute;
   width: 100%;
   padding-bottom: 140%;
-  border-radius: 6%;
-  background-color: #ffffff;
+  // background-color: #ffffff;
   cursor: grab;
 
   &.use-transition {
     transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
   }
 
-  &.use-box-shadow {
+  &.use-box-shadow .card-content {
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   }
 
@@ -19,6 +18,9 @@
   }
 
   .card-content {
+    background-color: #ffffff;
+    border-radius: 6%;
+
     position: absolute;
     height: 100%;
     width: 100%;
@@ -84,11 +86,11 @@ img {
 }
 
 .transition-on-load {
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
+  transform: scale(1.2);
+  transition: transform 0.3s ease-out;
 
   &.loaded {
-    opacity: 1;
+    transform: scale(1);
   }
 }
 
